@@ -44,12 +44,69 @@ const areas = [
   { id: "client", name: "Client Room", count: 1, detail: "外部相談 / Locked soon" }
 ];
 
+const objectCatalog = [
+  { id: "desk", name: "Desk Pod", swatch: "#e9b26e" },
+  { id: "plant", name: "Plant", swatch: "#58d887" },
+  { id: "sofa", name: "Sofa", swatch: "#638bc0" },
+  { id: "board", name: "Board", swatch: "#f8f2dc" },
+  { id: "cooler", name: "Cooler", swatch: "#8dddf2" },
+  { id: "table", name: "Table", swatch: "#e6b36d" }
+];
+
+const spriteAtlas = {
+  agentIdle: {
+    colors: {
+      h: "#2f2738",
+      f: "#e8b27f",
+      s: "#4aa3bd",
+      d: "#263047",
+      e: "#20263b"
+    },
+    rows: [
+      ".....hhhh.....",
+      "...hhhhhhhh...",
+      "..hhffffffh..",
+      "..hffeffefh..",
+      "..hffffffhh..",
+      "...ffffff....",
+      "....ssss.....",
+      "...ssssss....",
+      "..dssssssd...",
+      "..dssssssd...",
+      "...ssssss....",
+      "....s..s.....",
+      "...dd..dd...."
+    ]
+  },
+  sparkle: {
+    colors: { y: "#ffe06d", w: "#fff6c7" },
+    rows: [
+      "..y..",
+      ".yyy.",
+      "yywyy",
+      ".yyy.",
+      "..y.."
+    ]
+  }
+};
+
 const statusText = {
   available: "Available",
   focus: "Focus",
   meeting: "In meeting",
   away: "Away"
 };
+
+function readPlacedObjects() {
+  try {
+    const raw = localStorage.getItem("mk3PlacedObjects");
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.filter((item) => objectCatalog.some((object) => object.id === item.type)) : [];
+  } catch {
+    return [];
+  }
+}
 
 const state = {
   selected: "mika",
@@ -58,6 +115,8 @@ const state = {
   profileOpen: false,
   simplified: false,
   studio: false,
+  activeObject: "desk",
+  placedObjects: readPlacedObjects(),
   mic: true,
   cam: false,
   screen: false,
@@ -67,6 +126,27 @@ const state = {
 
 const q = (selector) => document.querySelector(selector);
 const qa = (selector) => [...document.querySelectorAll(selector)];
+let walkTimer = null;
+
+function savePlacedObjects() {
+  try {
+    localStorage.setItem("mk3PlacedObjects", JSON.stringify(state.placedObjects.slice(-40)));
+  } catch {
+    // Local storage can be unavailable in privacy-restricted contexts.
+  }
+}
+
+function drawAtlasSprite(ctx, key, x, y, scale = 2, overrides = {}) {
+  const sprite = spriteAtlas[key];
+  if (!sprite) return;
+  sprite.rows.forEach((row, rowIndex) => {
+    [...row].forEach((token, colIndex) => {
+      if (token === ".") return;
+      ctx.fillStyle = overrides[token] || sprite.colors[token];
+      ctx.fillRect(x + colIndex * scale, y + rowIndex * scale, scale, scale);
+    });
+  });
+}
 
 function drawPixelMap() {
   const canvas = q("#pixelMap");
@@ -235,18 +315,8 @@ function drawPixelMap() {
   };
 
   const avatar = (x, y, shirt, hair = "#2b2637") => {
-    solid(x + 5, y + 41, 22, 5, "rgba(23, 26, 42, .2)");
-    solid(x + 6, y + 1, 16, 6, hair);
-    solid(x + 4, y + 7, 20, 14, "#e8b27f");
-    solid(x + 2, y + 9, 5, 11, hair);
-    solid(x + 22, y + 9, 5, 11, hair);
-    solid(x + 7, y + 21, 16, 20, shirt);
-    solid(x + 3, y + 25, 5, 12, "#263047");
-    solid(x + 22, y + 25, 5, 12, "#263047");
-    solid(x + 8, y + 41, 5, 5, "#263047");
-    solid(x + 18, y + 41, 5, 5, "#263047");
-    solid(x + 9, y + 12, 3, 3, "#263047");
-    solid(x + 17, y + 12, 3, 3, "#263047");
+    solid(x + 5, y + 27, 24, 5, "rgba(23, 26, 42, .2)");
+    drawAtlasSprite(ctx, "agentIdle", x, y, 2, { s: shirt, h: hair });
   };
 
   const tree = (x, y) => {
@@ -306,13 +376,19 @@ function drawPixelMap() {
   };
 
   const spark = (x, y, text, color = "#ffe06d") => {
-    solid(x, y + 7, 6, 6, color);
-    solid(x + 6, y, 6, 6, color);
-    solid(x + 6, y + 14, 6, 6, color);
-    solid(x + 12, y + 7, 6, 6, color);
+    drawAtlasSprite(ctx, "sparkle", x, y + 1, 2, { y: color });
     ctx.fillStyle = "#fffaf0";
     ctx.font = "11px ui-monospace, SFMono-Regular, Menlo, monospace";
     ctx.fillText(text, x + 22, y + 17);
+  };
+
+  const catalogObject = (type, x, y) => {
+    if (type === "desk") desk(x, y, "#e9b26e", "#59bfd8");
+    if (type === "plant") plant(x, y);
+    if (type === "sofa") couch(x, y, 78, "#638bc0");
+    if (type === "board") whiteboard(x, y, 88, 44);
+    if (type === "cooler") waterCooler(x, y);
+    if (type === "table") roundTable(x, y);
   };
 
   tileFloor(0, 0, 60, 40, ["#8fce88", "#84c782", "#9bd795"], "#77b873");
@@ -416,6 +492,8 @@ function drawPixelMap() {
   bookshelf(844, 438, 42, 78);
   plant(720, 336);
   plant(850, 506);
+
+  state.placedObjects.forEach((object) => catalogObject(object.type, object.x, object.y));
 
   avatar(184, 250, "#4aa3bd", "#382c28");
   avatar(456, 302, "#e3b047", "#7f573e");
@@ -547,6 +625,29 @@ function renderAreas() {
   q("#areaCount").textContent = areas.length;
 }
 
+function renderObjectLibrary() {
+  const list = q("#objectLibrary");
+  if (!list) return;
+  list.replaceChildren();
+  objectCatalog.forEach((object) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `palette-item ${object.id === state.activeObject ? "active" : ""}`;
+    button.dataset.objectType = object.id;
+    button.style.setProperty("--swatch", object.swatch);
+    button.innerHTML = `<span class="palette-swatch"></span><span>${object.name}</span>`;
+    button.addEventListener("click", () => {
+      state.activeObject = object.id;
+      q("#activeObjectLabel").textContent = object.name;
+      renderObjectLibrary();
+      setToast(`${object.name} を選択しました。Buildモードで地図をダブルクリックして配置できます`);
+    });
+    list.append(button);
+  });
+  const active = objectCatalog.find((object) => object.id === state.activeObject);
+  q("#activeObjectLabel").textContent = active?.name || "Object";
+}
+
 function renderAvatars() {
   qa(".agent-avatar[data-agent]").forEach((avatar) => {
     const id = avatar.dataset.agent;
@@ -578,6 +679,7 @@ function render() {
   renderProfile();
   renderMembers();
   renderAreas();
+  renderObjectLibrary();
   renderAvatars();
   renderControls();
 }
@@ -596,6 +698,41 @@ function toggleControl(key, label) {
   renderControls();
 }
 
+function mapPointFromEvent(event) {
+  const surface = q("#mapSurface");
+  const canvas = q("#pixelMap");
+  const rect = surface.getBoundingClientRect();
+  const left = ((event.clientX - rect.left) / rect.width) * 100;
+  const top = ((event.clientY - rect.top) / rect.height) * 100;
+  return {
+    left,
+    top,
+    x: ((event.clientX - rect.left) / rect.width) * canvas.width,
+    y: ((event.clientY - rect.top) / rect.height) * canvas.height
+  };
+}
+
+function moveYouTo(left, top) {
+  const you = q("#youAvatar");
+  clearTimeout(walkTimer);
+  you.classList.add("walking");
+  you.style.left = `${Math.max(6, Math.min(90, left))}%`;
+  you.style.top = `${Math.max(8, Math.min(86, top))}%`;
+  walkTimer = setTimeout(() => you.classList.remove("walking"), 620);
+}
+
+function placeSelectedObject(event) {
+  const active = objectCatalog.find((object) => object.id === state.activeObject) || objectCatalog[0];
+  const point = mapPointFromEvent(event);
+  const x = Math.max(96, Math.min(832, Math.round(point.x / 16) * 16));
+  const y = Math.max(96, Math.min(544, Math.round(point.y / 16) * 16));
+  state.placedObjects.push({ type: active.id, x, y });
+  state.placedObjects = state.placedObjects.slice(-40);
+  savePlacedObjects();
+  drawPixelMap();
+  setToast(`${active.name} を配置しました`);
+}
+
 qa(".agent-avatar[data-agent], .desk[data-agent]").forEach((node) => {
   node.addEventListener("click", () => selectAgent(node.dataset.agent));
 });
@@ -612,8 +749,12 @@ qa(".rail-btn").forEach((button) => {
   button.addEventListener("click", () => {
     qa(".rail-btn").forEach((node) => node.classList.toggle("active", node === button));
     if (button.dataset.view === "chat") state.peopleOpen = true;
-    if (button.dataset.view === "studio") state.studio = !state.studio;
-    setToast(button.dataset.view === "studio" ? "Build mode: deskや家具を編集できます" : `${button.textContent} view`);
+    if (button.dataset.view === "studio") {
+      state.studio = !state.studio;
+      state.profileOpen = false;
+    }
+    const active = objectCatalog.find((object) => object.id === state.activeObject);
+    setToast(button.dataset.view === "studio" ? `Build mode: ${active?.name || "Object"} を配置できます` : `${button.textContent} view`);
     renderControls();
   });
 });
@@ -681,8 +822,7 @@ q("#taskBtn").addEventListener("click", () => {
 });
 
 q("#homeBtn").addEventListener("click", () => {
-  q("#youAvatar").style.left = "53%";
-  q("#youAvatar").style.top = "68%";
+  moveYouTo(53, 68);
   state.profileOpen = false;
   setToast("自分の位置に戻りました");
   renderControls();
@@ -692,14 +832,23 @@ q("#zoomIn").addEventListener("click", () => setToast("Zoom in"));
 q("#zoomOut").addEventListener("click", () => setToast("Zoom out"));
 q("#inviteBtn").addEventListener("click", () => setToast("Invite linkをコピーしました"));
 q("#lockBtn").addEventListener("click", () => setToast("Review Podsをロックしました"));
+q("#clearObjectsBtn").addEventListener("click", () => {
+  state.placedObjects = [];
+  savePlacedObjects();
+  drawPixelMap();
+  setToast("配置したオブジェクトをクリアしました");
+});
 
 q("#mapSurface").addEventListener("dblclick", (event) => {
-  const rect = q("#mapSurface").getBoundingClientRect();
-  const left = ((event.clientX - rect.left) / rect.width) * 100;
-  const top = ((event.clientY - rect.top) / rect.height) * 100;
-  q("#youAvatar").style.left = `${Math.max(6, Math.min(90, left))}%`;
-  q("#youAvatar").style.top = `${Math.max(8, Math.min(86, top))}%`;
+  if (event.target.closest(".studio-palette")) return;
+  const point = mapPointFromEvent(event);
   state.profileOpen = false;
+  if (state.studio) {
+    placeSelectedObject(event);
+    renderControls();
+    return;
+  }
+  moveYouTo(point.left, point.top);
   setToast("Double-clickした場所へ移動しました");
   renderControls();
 });

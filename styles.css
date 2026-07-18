@@ -268,6 +268,18 @@ button {
   outline-offset: -4px;
 }
 
+.map-surface.studio::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(92, 124, 255, .16) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(92, 124, 255, .16) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
 .tile-grid {
   position: absolute;
   inset: 0;
@@ -487,6 +499,10 @@ button {
   image-rendering: pixelated;
 }
 
+.agent-avatar.you {
+  transition: left .55s linear, top .55s linear;
+}
+
 .profile-avatar,
 .mini-face,
 .self-avatar,
@@ -516,6 +532,14 @@ button {
 .agent-avatar.meeting::before { background: var(--meeting); }
 .agent-avatar.away::before { background: var(--away); }
 .agent-avatar.active { filter: drop-shadow(0 0 5px #fff); }
+
+.agent-avatar.walking {
+  animation: sprite-step .28s steps(2, end) infinite;
+}
+
+.agent-avatar.walking .body {
+  animation: walk-body .28s steps(2, end) infinite;
+}
 
 .agent-avatar .body {
   position: absolute;
@@ -590,6 +614,123 @@ button {
   font-weight: 900;
   white-space: nowrap;
   box-shadow: 0 3px 0 rgba(0, 0, 0, .16);
+}
+
+@keyframes sprite-step {
+  0% { margin-top: 0; }
+  50% { margin-top: -3px; }
+  100% { margin-top: 0; }
+}
+
+@keyframes walk-body {
+  0% {
+    box-shadow:
+      -4px 0 0 #283047,
+      4px 0 0 #283047,
+      0 4px 0 #283047,
+      -5px 13px 0 #283047,
+      5px 13px 0 #283047;
+  }
+  50% {
+    box-shadow:
+      -4px 0 0 #283047,
+      4px 0 0 #283047,
+      0 4px 0 #283047,
+      -8px 13px 0 #283047,
+      8px 13px 0 #283047;
+  }
+  100% {
+    box-shadow:
+      -4px 0 0 #283047,
+      4px 0 0 #283047,
+      0 4px 0 #283047,
+      -5px 13px 0 #283047,
+      5px 13px 0 #283047;
+  }
+}
+
+.studio-palette {
+  position: absolute;
+  left: 18px;
+  bottom: 24px;
+  z-index: 34;
+  display: none;
+  width: 252px;
+  padding: 10px;
+  border: 2px solid rgba(255, 255, 255, .16);
+  border-radius: 8px;
+  background: rgba(31, 34, 60, .95);
+  box-shadow: 0 16px 38px rgba(0, 0, 0, .32);
+}
+
+.map-surface.studio .studio-palette {
+  display: grid;
+  gap: 8px;
+}
+
+.palette-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+}
+
+.palette-head span {
+  color: #aeb5d6;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.palette-head strong {
+  overflow: hidden;
+  color: #fff;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.palette-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.palette-item,
+.clear-objects {
+  min-width: 0;
+  min-height: 42px;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, .08);
+  color: #fff;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.palette-item {
+  display: grid;
+  gap: 2px;
+  place-items: center;
+  padding: 6px 4px;
+}
+
+.palette-item.active {
+  background: #f5f7ff;
+  color: #27305f;
+}
+
+.palette-swatch {
+  width: 28px;
+  height: 20px;
+  border: 2px solid #1d2439;
+  background: var(--swatch, #e9b26e);
+  box-shadow:
+    5px 3px 0 rgba(255, 255, 255, .5) inset,
+    0 4px 0 rgba(0, 0, 0, .22);
+}
+
+.clear-objects {
+  background: rgba(255, 255, 255, .12);
 }
 
 .profile-pop {
@@ -1187,6 +1328,15 @@ button {
   .zoom-tools {
     right: 10px;
     bottom: 206px;
+  }
+
+  .studio-palette {
+    position: fixed;
+    left: 10px;
+    right: 10px;
+    bottom: 138px;
+    width: auto;
+    z-index: 65;
   }
 
   .participants-panel {

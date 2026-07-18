@@ -15,9 +15,12 @@ Date: 2026-07-18
 - Pixel art office map: rebuilt around a 16px-grid low-resolution canvas with `image-rendering: pixelated`.
 - Spatial density: includes outdoor strip, trees, meeting rooms, focus pods, product team desks, cafe, lobby, studio, water coolers, bookshelves, vending machines, plants, windows, whiteboards, walls, labels, speech bubbles, and small progress popups.
 - Gather visual correction pass: brightened the hallways and room floors, softened the heavy wall colors, and reduced desk/chair scale so the office reads closer to Gather's airy map view.
+- Sprite system pass: background NPCs are rendered from a small matrix-based sprite atlas, and sparkle effects reuse the same atlas renderer.
+- Studio pass: Build mode now exposes an object library and lets users place selected furniture on a 16px-snapped map coordinate. Placed objects are stored in local storage.
+- Walk pass: double-click movement now animates the You avatar with a simple walk-cycle class.
 - Avatar readability: DOM avatars are the single interactive source for named Agents; background NPCs are non-interactive flavor only.
 - Gather-style UI shell: left rail, top room/search/status bar, compact video tiles, bottom call controls, right Participants Panel, and mobile Participants sheet.
-- Core interactions: People panel open/close, Message, Locate, Follow, double-click walk target, Build/Studio toggle, Simplified View, status toggle, chat send.
+- Core interactions: People panel open/close, Message, Locate, Follow, double-click walk target, Build/Studio object placement, Simplified View, status toggle, chat send.
 - Mobile initial state: map-first, no default profile card, no video overlay, Participants opens through People.
 
 ## Verification evidence
@@ -30,7 +33,7 @@ Date: 2026-07-18
 
 - This is still an original mock, not Gather's proprietary asset set. It does not copy Gather sprites, object library, logo, or exact screenshots.
 - Gather's official pixel assets still have more polished sprite animation, object variety, and per-tile collision semantics than this static prototype.
-- Remaining largest gap: mk3 still lacks a real sprite atlas, walk-cycle animation, and a map editor/object library equivalent to Gather Studio.
+- Remaining largest gap: mk3 still lacks a full tileset/object atlas, collision rules, true pathfinding, multiplayer presence, and a map editor/object library equivalent to Gather Studio.
 - This version is acceptable as a stronger high-fidelity direction mock. It is not a production-quality Gather clone.
 
 ## Completion threshold used

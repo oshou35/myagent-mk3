@@ -6,6 +6,8 @@ Independent UI mock for `myagent mk3`.
 - Static GitHub Pages-ready site.
 - UI direction: Gather-style 16px-grid pixel virtual office for managing and growing agents.
 - Reference concepts: 2D office map, Participants Panel, private areas, desks, status dots, bottom call controls, chat, locate/follow/wave actions.
+- Build mode includes a small object library for placing desks, plants, sofas, boards, coolers, and tables on the map.
+- You avatar supports double-click walk movement with a simple walk-cycle animation.
 - Research notes: `docs/gather-ui-research.md`
 - Self-review checklist: `docs/gather-quality-review.md`
 - Verified screenshots: `screenshots/mobile.png`, `screenshots/desktop.png`
