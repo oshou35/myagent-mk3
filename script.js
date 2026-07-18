@@ -158,23 +158,23 @@ function drawPixelMap() {
   const shadow = (x, y, width, height) => solid(x + 4, y + height - 2, width - 4, 6, "rgba(22, 25, 39, .22)");
 
   const desk = (x, y, color = "#e6c18a", screen = "#49b7d7") => {
-    shadow(x, y, 76, 48);
-    rect(x, y, 76, 38, color, "#473648", 3);
-    solid(x + 3, y + 31, 70, 4, "#b8794f");
-    rect(x + 12, y - 15, 25, 17, screen, "#223048", 3);
-    solid(x + 17, y - 10, 13, 5, "#b9f4ff");
-    rect(x + 45, y - 12, 20, 14, "#5b84d7", "#223048", 2);
-    solid(x + 9, y + 14, 22, 5, "#30466f");
-    solid(x + 34, y + 15, 24, 4, "#fff3d3");
-    solid(x + 61, y + 10, 7, 11, "#61c97b");
-    solid(x + 62, y + 8, 6, 3, "#a4f2a4");
+    shadow(x, y, 66, 42);
+    rect(x, y, 66, 32, color, "#4c4050", 3);
+    solid(x + 3, y + 26, 60, 4, "#b8794f");
+    rect(x + 9, y - 13, 22, 15, screen, "#223048", 3);
+    solid(x + 14, y - 9, 11, 4, "#b9f4ff");
+    rect(x + 39, y - 10, 17, 12, "#5b84d7", "#223048", 2);
+    solid(x + 8, y + 12, 18, 4, "#30466f");
+    solid(x + 30, y + 13, 20, 3, "#fff3d3");
+    solid(x + 54, y + 8, 6, 10, "#61c97b");
+    solid(x + 55, y + 6, 5, 3, "#a4f2a4");
   };
 
   const officeChair = (x, y, color = "#30324d") => {
-    rect(x, y, 22, 22, color, "#22283d", 2);
-    solid(x + 5, y + 20, 12, 8, "#22283d");
-    solid(x + 8, y + 28, 4, 5, "#22283d");
-    solid(x + 15, y + 28, 4, 5, "#22283d");
+    rect(x, y, 18, 19, color, "#22283d", 2);
+    solid(x + 4, y + 18, 10, 7, "#22283d");
+    solid(x + 6, y + 25, 4, 5, "#22283d");
+    solid(x + 13, y + 25, 4, 5, "#22283d");
   };
 
   const plant = (x, y) => {
@@ -315,9 +315,9 @@ function drawPixelMap() {
     ctx.fillText(text, x + 22, y + 17);
   };
 
-  tileFloor(0, 0, 60, 40, ["#82c981", "#78bf78", "#8bd18a"], "#74ad70");
-  tileFloor(16, 496, 16, 8, ["#d8c099", "#cfae7d"], "#b89363");
-  tileFloor(848, 80, 7, 28, ["#d8c099", "#cfae7d"], "#b89363");
+  tileFloor(0, 0, 60, 40, ["#8fce88", "#84c782", "#9bd795"], "#77b873");
+  tileFloor(16, 496, 16, 8, ["#e8d5ad", "#dcc292"], "#c6a976");
+  tileFloor(848, 80, 7, 28, ["#e8d5ad", "#dcc292"], "#c6a976");
   tree(10, 34);
   tree(42, 178);
   tree(8, 370);
@@ -325,20 +325,20 @@ function drawPixelMap() {
   tree(876, 436);
   vending(36, 266, "#5e7bd9");
 
-  solid(72, 48, 832, 544, "#29334a");
-  solid(80, 56, 816, 528, "#536071");
+  solid(72, 48, 832, 544, "#bfc8d2");
+  solid(80, 56, 816, 528, "#f2dfbe");
 
-  room({ name: "Focus Pods", x: 96, y: 80, cols: 17, rows: 13, floor: ["#9ec07a", "#acc987"], grout: "#8fb06f", wall: "#7d6c75", labelWidth: 92, doors: [{ side: "bottom", at: 8, span: 3 }] });
-  room({ name: "Lobby", x: 96, y: 320, cols: 14, rows: 14, floor: ["#aac3c7", "#bfd0d0"], grout: "#8ea8ac", wall: "#7a7581", labelWidth: 58, doors: [{ side: "right", at: 5, span: 3 }, { side: "top", at: 4, span: 2 }] });
-  room({ name: "Review Pods", x: 384, y: 96, cols: 19, rows: 15, floor: ["#aab0b4", "#b7bec2"], grout: "#909aa2", wall: "#8e6a77", labelWidth: 98, doors: [{ side: "bottom", at: 7, span: 3 }, { side: "left", at: 8, span: 2 }] });
-  room({ name: "Client Room", x: 704, y: 96, cols: 10, rows: 11, floor: ["#dca564", "#c99155"], grout: "#b77a45", wall: "#8e6a77", labelWidth: 94, doors: [{ side: "bottom", at: 3, span: 3 }] });
-  room({ name: "Agent Studio", x: 384, y: 352, cols: 19, rows: 12, floor: ["#928ad0", "#a097dc"], grout: "#7b76ad", wall: "#6f657f", labelWidth: 102, doors: [{ side: "top", at: 5, span: 3 }, { side: "right", at: 9, span: 2 }] });
-  room({ name: "Cafe", x: 704, y: 320, cols: 10, rows: 14, floor: ["#91ab6b", "#a4bd7a"], grout: "#7c955a", wall: "#796978", labelWidth: 58, doors: [{ side: "left", at: 5, span: 3 }, { side: "top", at: 3, span: 2 }] });
+  room({ name: "Focus Pods", x: 96, y: 80, cols: 17, rows: 13, floor: ["#b8daa0", "#c5e3ad"], grout: "#9ec286", wall: "#8996a5", labelWidth: 92, doors: [{ side: "bottom", at: 8, span: 3 }] });
+  room({ name: "Lobby", x: 96, y: 320, cols: 14, rows: 14, floor: ["#c8dadd", "#dbe7e6"], grout: "#a9c0c4", wall: "#8e9baa", labelWidth: 58, doors: [{ side: "right", at: 5, span: 3 }, { side: "top", at: 4, span: 2 }] });
+  room({ name: "Review Pods", x: 384, y: 96, cols: 19, rows: 15, floor: ["#cbd2dc", "#dbe1e8"], grout: "#aab3c0", wall: "#929eae", labelWidth: 98, doors: [{ side: "bottom", at: 7, span: 3 }, { side: "left", at: 8, span: 2 }] });
+  room({ name: "Client Room", x: 704, y: 96, cols: 10, rows: 11, floor: ["#e8b772", "#dc9f61"], grout: "#c8844c", wall: "#929eae", labelWidth: 94, doors: [{ side: "bottom", at: 3, span: 3 }] });
+  room({ name: "Agent Studio", x: 384, y: 352, cols: 19, rows: 12, floor: ["#aaa6de", "#bab5e9"], grout: "#8f8ac0", wall: "#8d94aa", labelWidth: 102, doors: [{ side: "top", at: 5, span: 3 }, { side: "right", at: 9, span: 2 }] });
+  room({ name: "Cafe", x: 704, y: 320, cols: 10, rows: 14, floor: ["#b7d28e", "#c6dda0"], grout: "#94ad73", wall: "#8d9aaa", labelWidth: 58, doors: [{ side: "left", at: 5, span: 3 }, { side: "top", at: 3, span: 2 }] });
 
-  tileFloor(320, 304, 24, 4, ["#e0d3bf", "#d5c4ac"], "#bca98d");
-  brickWall(320, 288, 384, 16, "#7a7581");
-  brickWall(320, 368, 64, 16, "#7a7581");
-  brickWall(656, 368, 48, 16, "#7a7581");
+  tileFloor(320, 304, 24, 4, ["#ead9ba", "#dfcba9"], "#c8b28f");
+  brickWall(320, 288, 384, 16, "#9aa5b3");
+  brickWall(320, 368, 64, 16, "#9aa5b3");
+  brickWall(656, 368, 48, 16, "#9aa5b3");
   label("Main Hall", 430, 316, 82);
 
   windowBlock(128, 80, 58);
