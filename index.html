@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>myagent mk3</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%23044ce0'/%3E%3Cpath d='M6 22h20v4H6zM8 11h5v9H8zM15 7h5v13h-5zM22 13h4v7h-4z' fill='%23ffd24f'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell" aria-label="myagent mk3 mock">
+    <section class="game" aria-label="Agent company office">
+      <header class="hud">
+        <div class="hud-date">
+          <span class="hud-k">6年 4月</span>
+          <span class="hud-v" id="turnLabel">朝</span>
+        </div>
+        <div class="hud-stat">
+          <span>資金</span>
+          <b id="fundsLabel">12,480</b>
+        </div>
+        <div class="hud-stat">
+          <span>信頼</span>
+          <b id="trustLabel">82</b>
+        </div>
+        <div class="hud-stat">
+          <span>品質</span>
+          <b id="qualityLabel">A</b>
+        </div>
+      </header>
+
+      <section class="office-wrap" aria-label="Office map">
+        <div class="sky-band">
+          <div class="gear gear-a"></div>
+          <div class="gear gear-b"></div>
+          <div class="gear gear-c"></div>
+        </div>
+
+        <div class="office" id="office">
+          <div class="back-wall">
+            <div class="window w1"></div>
+            <div class="window w2"></div>
+            <div class="window w3"></div>
+            <div class="whiteboard">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+          <div class="left-wall"></div>
+          <div class="right-wall"></div>
+          <div class="floor-grid"></div>
+
+          <div class="object shelf"></div>
+          <div class="object plant p1"></div>
+          <div class="object plant p2"></div>
+          <div class="object couch"></div>
+          <div class="object trophy-case"></div>
+
+          <button class="desk d1" data-agent="mika" aria-label="ミカのデスク">
+            <span class="monitor"></span><span class="keyboard"></span>
+          </button>
+          <button class="desk d2" data-agent="ren" aria-label="レンのデスク">
+            <span class="monitor"></span><span class="keyboard"></span>
+          </button>
+          <button class="desk d3" data-agent="sora" aria-label="ソラのデスク">
+            <span class="monitor"></span><span class="keyboard"></span>
+          </button>
+          <button class="desk d4" data-agent="nagi" aria-label="ナギのデスク">
+            <span class="monitor"></span><span class="keyboard"></span>
+          </button>
+
+          <button class="avatar a1 available active" data-agent="mika" aria-label="ミカ">
+            <span class="head"></span><span class="body"></span><span class="name">ミカ</span>
+          </button>
+          <button class="avatar a2 focus" data-agent="ren" aria-label="レン">
+            <span class="head"></span><span class="body"></span><span class="name">レン</span>
+          </button>
+          <button class="avatar a3 review" data-agent="sora" aria-label="ソラ">
+            <span class="head"></span><span class="body"></span><span class="name">ソラ</span>
+          </button>
+          <button class="avatar a4 available" data-agent="nagi" aria-label="ナギ">
+            <span class="head"></span><span class="body"></span><span class="name">ナギ</span>
+          </button>
+
+          <div class="bubble b1" id="morningBubble">おはよう</div>
+          <div class="bubble b2" id="doneBubble">よくできた</div>
+          <div class="gain g1">企画 +3</div>
+          <div class="gain g2">品質 +2</div>
+          <div class="gain g3">信頼 +7</div>
+          <div class="flame f1"></div>
+          <div class="flame f2"></div>
+        </div>
+
+        <aside class="presence" aria-label="Agent statuses">
+          <b>社員状況</b>
+          <span><i class="dot available"></i>空き <strong id="availableCount">2</strong></span>
+          <span><i class="dot focus"></i>集中 <strong id="focusCount">1</strong></span>
+          <span><i class="dot review"></i>確認待ち <strong id="reviewCount">1</strong></span>
+        </aside>
+      </section>
+
+      <section class="message-strip" aria-live="polite">
+        <div class="big-copy">
+          <span>AGENT</span><b>を育てよう!</b>
+        </div>
+        <div class="ticker" id="ticker">新規案件「仕様整理」が届きました</div>
+      </section>
+
+      <section class="command-area">
+        <nav class="menu" aria-label="Main actions">
+          <button class="menu-btn active" data-panel="staff">社員</button>
+          <button class="menu-btn" data-panel="projects">案件</button>
+          <button class="menu-btn" data-panel="research">研究</button>
+          <button class="menu-btn" data-panel="office">設備</button>
+        </nav>
+
+        <section class="panel" id="panel" aria-label="Command panel">
+          <div class="panel-head">
+            <div>
+              <span class="panel-k" id="panelKind">社員</span>
+              <h1 id="panelTitle">ミカ</h1>
+            </div>
+            <button class="tiny-btn" id="walkBtn">席へ</button>
+          </div>
+
+          <div class="staff-card" id="staffCard">
+            <div class="portrait available" id="portrait"><span></span></div>
+            <div class="staff-info">
+              <div class="role" id="roleLabel">Planner Agent</div>
+              <div class="bars">
+                <label>企画 <span id="planValue">72</span></label>
+                <meter id="planMeter" min="0" max="100" value="72"></meter>
+                <label>実装 <span id="buildValue">48</span></label>
+                <meter id="buildMeter" min="0" max="100" value="48"></meter>
+                <label>検証 <span id="qaValue">64</span></label>
+                <meter id="qaMeter" min="0" max="100" value="64"></meter>
+              </div>
+            </div>
+          </div>
+
+          <div class="project-card hidden" id="projectCard">
+            <div class="project-title">受注中: Agent育成UI</div>
+            <div class="project-progress"><span id="projectFill"></span></div>
+            <div class="project-meta">
+              <span>進捗 <b id="projectPercent">42%</b></span>
+              <span>炎上 <b id="riskLabel">低</b></span>
+            </div>
+          </div>
+
+          <div class="action-grid">
+            <button id="trainBtn">研修</button>
+            <button id="projectBtn">案件開始</button>
+            <button id="reviewBtn">品質確認</button>
+            <button id="hireBtn">採用</button>
+          </div>
+        </section>
+      </section>
+    </section>
+
+    <aside class="desktop-notes" aria-label="Design notes">
+      <div class="note-card">
+        <h2>mk3</h2>
+        <p>mk1/mk2とは接続しない独立モック。ゲーム発展国の経営SLG感とGatherの空間プレゼンスを組み合わせる。</p>
+      </div>
+      <div class="note-card compact">
+        <b>今日の成果</b>
+        <span id="summaryLine">納品 0 / 研修 0 / 採用 0</span>
+      </div>
+    </aside>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
