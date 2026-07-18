@@ -230,11 +230,22 @@ button {
 .map-surface {
   position: absolute;
   inset: 0;
-  min-width: 900px;
+  min-width: 960px;
   min-height: 640px;
-  background: #1e223a;
+  background: #10131f;
   overflow: hidden;
   image-rendering: pixelated;
+}
+
+.map-surface::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(14, 17, 28, .26), transparent 12%, transparent 88%, rgba(14, 17, 28, .28)),
+    linear-gradient(0deg, rgba(14, 17, 28, .16), transparent 18%, transparent 78%, rgba(14, 17, 28, .2));
 }
 
 .pixel-map {
@@ -321,8 +332,8 @@ button {
 }
 
 .desk {
-  width: 118px;
-  height: 72px;
+  width: 104px;
+  height: 74px;
   padding: 0;
   border: 0;
   border-radius: 0;
@@ -333,7 +344,7 @@ button {
 .desk b {
   position: absolute;
   left: 50%;
-  bottom: -14px;
+  bottom: -12px;
   transform: translateX(-50%);
   padding: 2px 5px;
   border: 2px solid rgba(15, 18, 34, .6);
@@ -342,6 +353,13 @@ button {
   color: #fff;
   font-size: 9px;
   white-space: nowrap;
+  opacity: 0;
+  transition: opacity .12s ease;
+}
+
+.desk:hover b,
+.desk:focus-visible b {
+  opacity: 1;
 }
 
 .monitor {
@@ -352,10 +370,10 @@ button {
   display: none;
 }
 
-.desk-mika { left: 12%; top: 20%; }
-.desk-ren { left: 25%; top: 20%; }
-.desk-sora { left: 48%; top: 25%; }
-.desk-nagi { left: 60%; top: 25%; }
+.desk-mika { left: 15%; top: 24%; }
+.desk-ren { left: 43%; top: 27%; }
+.desk-sora { left: 55%; top: 34%; }
+.desk-nagi { left: 78%; top: 61%; }
 
 .table {
   width: 150px;
@@ -538,11 +556,11 @@ button {
 .avatar-nagi .body { background: #e2aa36; }
 .avatar-you .body { background: #2f54bd; }
 
-.avatar-mika { left: 18%; top: 23%; }
-.avatar-ren { left: 32%; top: 27%; }
-.avatar-sora { left: 52%; top: 39%; }
-.avatar-nagi { left: 66%; top: 35%; }
-.avatar-you { left: 57%; top: 53%; }
+.avatar-mika { left: 19%; top: 30%; }
+.avatar-ren { left: 48%; top: 35%; }
+.avatar-sora { left: 60%; top: 42%; }
+.avatar-nagi { left: 82%; top: 65%; }
+.avatar-you { left: 53%; top: 68%; }
 
 .agent-avatar .name {
   position: absolute;
@@ -577,6 +595,7 @@ button {
 .profile-pop {
   position: absolute;
   z-index: 20;
+  display: none;
   left: 53%;
   top: 43%;
   width: 270px;
@@ -584,6 +603,10 @@ button {
   border-radius: 8px;
   background: rgba(35, 36, 64, .96);
   box-shadow: 0 20px 48px var(--shadow);
+}
+
+.map-surface.profile-open .profile-pop {
+  display: block;
 }
 
 .profile-head {
@@ -643,17 +666,16 @@ button {
   position: absolute;
   z-index: 30;
   top: 14px;
-  left: 50%;
+  right: 14px;
   display: grid;
   grid-template-columns: repeat(3, minmax(130px, 1fr));
   gap: 10px;
-  width: min(560px, calc(100% - 48px));
-  transform: translateX(-50%);
+  width: min(470px, calc(100% - 150px));
 }
 
 .video-tile {
-  min-height: 86px;
-  padding: 10px;
+  min-height: 62px;
+  padding: 8px;
   border: 2px solid rgba(255, 255, 255, .14);
   border-radius: 8px;
   background:
@@ -668,8 +690,8 @@ button {
 }
 
 .tile-avatar {
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
   border: 3px solid rgba(255, 255, 255, .68);
 }
 
@@ -1109,22 +1131,12 @@ button {
   }
 
   .map-surface {
-    min-width: 900px;
+    min-width: 960px;
     min-height: 640px;
-    transform: translateX(-235px);
+    transform: translateX(-190px);
   }
 
   .video-strip {
-    top: 10px;
-    grid-template-columns: repeat(2, minmax(124px, 1fr));
-  }
-
-  .video-tile {
-    min-height: 70px;
-    padding: 8px;
-  }
-
-  .video-tile.ghost {
     display: none;
   }
 
@@ -1136,7 +1148,7 @@ button {
     bottom: 136px;
     width: calc(100vw - 24px);
     z-index: 66;
-    transform: translateX(235px);
+    transform: translateX(190px);
   }
 
   .bottom-nav {

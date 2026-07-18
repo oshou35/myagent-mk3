@@ -14,16 +14,16 @@ Date: 2026-07-18
 
 ## UI patterns reproduced in mk3
 
-- 2D virtual office map with desks, meeting areas, private rings, furniture, and status bubbles.
-- High-density pixel-art office map with distinct team areas, walls, windows, desks, lounge objects, plants, and decorative office items.
+- 2D virtual office map with desks, meeting areas, private rings, furniture, status bubbles, and walk targets.
+- High-density 16px-grid pixel office map with distinct team areas, walls, windows, desks, lounge objects, plants, vending machines, whiteboards, and decorative office items.
 - Left workspace navigation rail.
 - Top room/search/status bar.
 - Bottom call controls for mic, camera, screen share, reactions, and people.
 - Right Participants Panel with current area, active areas, members, offline members, and chat.
 - Member profile card with Message, Locate, and Follow actions.
-- Mobile layout where Participants behaves as a bottom sheet above call controls.
+- Mobile layout where the map is visible first and Participants can open as a bottom sheet above call controls.
 - Agent management semantics mapped onto Gather interactions: wave over, start task, build mode, focus status, and private review pods.
 
 ## Boundary
 
-This mock copies interaction structure and layout conventions. It does not copy Gather branding, logos, proprietary art assets, screenshots, or exact product text.
+This mock copies interaction structure and layout conventions. It does not copy Gather branding, logos, proprietary art assets, screenshots, or exact product text. Visual parity means "same class of virtual-office pixel UI quality", not a literal asset clone.
