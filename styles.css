@@ -232,12 +232,18 @@ button {
   inset: 0;
   min-width: 780px;
   min-height: 560px;
-  background:
-    linear-gradient(90deg, rgba(70, 42, 25, .22) 1px, transparent 1px),
-    linear-gradient(0deg, rgba(70, 42, 25, .22) 1px, transparent 1px),
-    var(--map-floor);
-  background-size: 28px 28px;
+  background: #1e223a;
   overflow: hidden;
+  image-rendering: pixelated;
+}
+
+.pixel-map {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
 }
 
 .map-surface.simplified .object,
@@ -254,10 +260,7 @@ button {
 .tile-grid {
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(90deg, rgba(255, 255, 255, .16) 1px, transparent 1px),
-    linear-gradient(0deg, rgba(255, 255, 255, .16) 1px, transparent 1px);
-  background-size: 28px 28px;
+  display: none;
   pointer-events: none;
 }
 
@@ -268,36 +271,34 @@ button {
 }
 
 .area {
-  z-index: 1;
+  z-index: 5;
   display: grid;
   place-items: start;
   padding: 8px;
-  border: 3px solid rgba(25, 27, 46, .42);
-  border-radius: 8px;
-  background: rgba(120, 189, 144, .54);
-  color: rgba(29, 35, 49, .72);
-  font-size: 12px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #1d2540;
+  font-size: 11px;
   font-weight: 900;
   text-align: left;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, .55);
 }
 
 .area:hover,
 .area.active {
-  outline: 3px solid rgba(255, 255, 255, .88);
+  outline: 3px dashed rgba(255, 255, 255, .9);
+  outline-offset: -4px;
 }
 
-.area-lobby { left: 5%; top: 52%; width: 22%; height: 38%; background: rgba(116, 178, 220, .52); }
-.area-focus { left: 7%; top: 11%; width: 31%; height: 29%; background: rgba(123, 193, 142, .56); }
-.area-review { left: 42%; top: 14%; width: 28%; height: 36%; background: rgba(150, 181, 222, .6); }
-.area-client { right: 5%; top: 12%; width: 20%; height: 34%; background: rgba(214, 164, 107, .62); }
-.area-cafe { right: 7%; bottom: 8%; width: 25%; height: 32%; background: rgba(133, 188, 143, .58); }
+.area-lobby { left: 5%; top: 52%; width: 22%; height: 38%; }
+.area-focus { left: 7%; top: 11%; width: 31%; height: 29%; }
+.area-review { left: 42%; top: 14%; width: 28%; height: 36%; }
+.area-client { right: 5%; top: 12%; width: 20%; height: 34%; }
+.area-cafe { right: 7%; bottom: 8%; width: 25%; height: 32%; }
 
 .wall {
-  z-index: 2;
-  height: 20px;
-  border: 3px solid #4c382e;
-  background: #7a4d35;
-  box-shadow: inset 0 5px rgba(255, 255, 255, .12);
+  display: none;
 }
 
 .wall-a { left: 3%; top: 46%; width: 73%; }
@@ -305,14 +306,7 @@ button {
 .wall-c { right: 30%; top: 46%; width: 20px; height: 42%; }
 
 .rug {
-  z-index: 2;
-  border: 4px solid rgba(51, 57, 99, .56);
-  border-radius: 8px;
-  background:
-    linear-gradient(90deg, rgba(255, 255, 255, .22) 1px, transparent 1px),
-    linear-gradient(0deg, rgba(255, 255, 255, .22) 1px, transparent 1px),
-    #566aa8;
-  background-size: 18px 18px;
+  display: none;
 }
 
 .rug-review { left: 46%; top: 23%; width: 20%; height: 19%; }
@@ -322,49 +316,40 @@ button {
   z-index: 4;
 }
 
+.object:not(.desk) {
+  display: none;
+}
+
 .desk {
   width: 118px;
   height: 72px;
   padding: 0;
-  border: 4px solid #4d3326;
-  border-radius: 5px;
-  background: #d6a56c;
-  box-shadow: inset 0 -8px rgba(82, 48, 31, .16);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .desk b {
   position: absolute;
   left: 50%;
-  bottom: -20px;
+  bottom: -14px;
   transform: translateX(-50%);
-  padding: 2px 6px;
-  border-radius: 6px;
+  padding: 2px 5px;
+  border: 2px solid rgba(15, 18, 34, .6);
+  border-radius: 3px;
   background: rgba(35, 36, 64, .92);
   color: #fff;
-  font-size: 10px;
+  font-size: 9px;
   white-space: nowrap;
 }
 
 .monitor {
-  position: absolute;
-  left: 40px;
-  top: -20px;
-  width: 45px;
-  height: 32px;
-  border: 4px solid #2a3241;
-  border-radius: 4px;
-  background: #2b83a7;
+  display: none;
 }
 
 .chair {
-  position: absolute;
-  left: 44px;
-  bottom: -24px;
-  width: 38px;
-  height: 30px;
-  border: 4px solid #333c52;
-  border-radius: 7px;
-  background: #465a8a;
+  display: none;
 }
 
 .desk-mika { left: 12%; top: 20%; }
@@ -466,8 +451,7 @@ button {
 
 .private-ring {
   z-index: 3;
-  border: 3px dashed rgba(255, 255, 255, .62);
-  border-radius: 999px;
+  border: 0;
   pointer-events: none;
 }
 
@@ -477,60 +461,76 @@ button {
 .agent-avatar {
   position: absolute;
   z-index: 8;
-  width: 48px;
-  height: 58px;
+  width: 42px;
+  height: 54px;
   padding: 0;
   background: transparent;
   cursor: pointer;
+  image-rendering: pixelated;
 }
 
-.agent-avatar::before,
 .profile-avatar,
 .mini-face,
 .self-avatar,
 .tile-avatar {
   content: "";
   display: block;
+  border-radius: 4px;
+  background: var(--available);
+  image-rendering: pixelated;
+}
+
+.agent-avatar::before {
+  content: "";
+  position: absolute;
+  z-index: 3;
+  right: 0;
+  top: 4px;
+  display: block;
+  width: 10px;
+  height: 10px;
+  border: 2px solid #15182b;
   border-radius: 50%;
   background: var(--available);
 }
 
-.agent-avatar::before {
-  position: absolute;
-  left: 7px;
-  top: 3px;
-  width: 34px;
-  height: 34px;
-  border: 4px solid var(--available);
-  opacity: .86;
-}
-
-.agent-avatar.focus::before { border-color: var(--focus); background: rgba(255, 206, 97, .28); }
-.agent-avatar.meeting::before { border-color: var(--meeting); background: rgba(255, 111, 127, .24); }
-.agent-avatar.away::before { border-color: var(--away); background: rgba(156, 166, 197, .2); }
-.agent-avatar.active::before { box-shadow: 0 0 0 5px rgba(255, 255, 255, .9); }
+.agent-avatar.focus::before { background: var(--focus); }
+.agent-avatar.meeting::before { background: var(--meeting); }
+.agent-avatar.away::before { background: var(--away); }
+.agent-avatar.active { filter: drop-shadow(0 0 5px #fff); }
 
 .agent-avatar .body {
   position: absolute;
   left: 12px;
-  top: 12px;
-  width: 25px;
-  height: 35px;
-  border: 4px solid #24283e;
-  border-radius: 11px 11px 8px 8px;
+  top: 23px;
+  width: 18px;
+  height: 22px;
+  border: 0;
+  border-radius: 0;
   background: #4c72d7;
+  box-shadow:
+    -4px 0 0 #283047,
+    4px 0 0 #283047,
+    0 4px 0 #283047,
+    -5px 13px 0 #283047,
+    5px 13px 0 #283047;
 }
 
 .agent-avatar::after {
   content: "";
   position: absolute;
-  left: 15px;
-  top: 3px;
-  width: 18px;
-  height: 18px;
-  border: 3px solid #24283e;
-  border-radius: 50%;
+  left: 10px;
+  top: 8px;
+  width: 22px;
+  height: 17px;
+  border: 0;
+  border-radius: 0;
   background: #f0bd88;
+  box-shadow:
+    0 -4px 0 #2b2637,
+    -4px 0 0 #2b2637,
+    4px 0 0 #2b2637,
+    0 17px 0 #283047;
 }
 
 .avatar-ren .body { background: #2aa776; }
@@ -547,30 +547,31 @@ button {
 .agent-avatar .name {
   position: absolute;
   left: 50%;
-  top: 50px;
+  top: 47px;
   transform: translateX(-50%);
-  padding: 2px 6px;
-  border-radius: 6px;
+  padding: 1px 5px;
+  border: 2px solid rgba(0, 0, 0, .42);
+  border-radius: 3px;
   background: rgba(35, 36, 64, .9);
   color: #fff;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 900;
   white-space: nowrap;
 }
 
 .chat-bubble {
   position: absolute;
-  left: 32px;
-  top: -18px;
-  padding: 4px 8px;
-  border: 2px solid rgba(45, 50, 88, .32);
-  border-radius: 999px;
+  left: 30px;
+  top: -16px;
+  padding: 3px 7px;
+  border: 3px solid rgba(45, 50, 88, .48);
+  border-radius: 4px;
   background: #fff;
   color: #30385f;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 900;
   white-space: nowrap;
-  box-shadow: 0 4px 0 rgba(0, 0, 0, .12);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, .16);
 }
 
 .profile-pop {
