@@ -230,8 +230,8 @@ button {
 .map-surface {
   position: absolute;
   inset: 0;
-  min-width: 780px;
-  min-height: 560px;
+  min-width: 900px;
+  min-height: 640px;
   background: #1e223a;
   overflow: hidden;
   image-rendering: pixelated;
@@ -540,9 +540,9 @@ button {
 
 .avatar-mika { left: 18%; top: 23%; }
 .avatar-ren { left: 32%; top: 27%; }
-.avatar-sora { left: 51%; top: 33%; }
+.avatar-sora { left: 52%; top: 39%; }
 .avatar-nagi { left: 66%; top: 35%; }
-.avatar-you { left: 52%; top: 50%; }
+.avatar-you { left: 57%; top: 53%; }
 
 .agent-avatar .name {
   position: absolute;
@@ -1109,8 +1109,9 @@ button {
   }
 
   .map-surface {
-    min-width: 640px;
-    transform: translateX(-125px);
+    min-width: 900px;
+    min-height: 640px;
+    transform: translateX(-235px);
   }
 
   .video-strip {
@@ -1135,7 +1136,7 @@ button {
     bottom: 136px;
     width: calc(100vw - 24px);
     z-index: 66;
-    transform: translateX(125px);
+    transform: translateX(235px);
   }
 
   .bottom-nav {

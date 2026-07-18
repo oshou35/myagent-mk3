@@ -5,6 +5,7 @@ Date: 2026-07-18
 ## Sources
 
 - Gather Virtual Office: https://www.gather.town/virtual-office
+- Gather Japanese homepage: https://www.gather.town/ja/
 - Gather Features: https://www.gather.town/features
 - Participants Panel Overview: https://support.gather.town/articles/3602925011-participants-panel-overview
 - Take a Tour of an Office on Gather: https://support.gather.town/articles/2958572750-take-a-tour-of-an-office-on-gather
@@ -14,6 +15,7 @@ Date: 2026-07-18
 ## UI patterns reproduced in mk3
 
 - 2D virtual office map with desks, meeting areas, private rings, furniture, and status bubbles.
+- High-density pixel-art office map with distinct team areas, walls, windows, desks, lounge objects, plants, and decorative office items.
 - Left workspace navigation rail.
 - Top room/search/status bar.
 - Bottom call controls for mic, camera, screen share, reactions, and people.

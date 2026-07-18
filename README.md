@@ -7,6 +7,7 @@ Independent UI mock for `myagent mk3`.
 - UI direction: Gather-style virtual office for managing and growing agents.
 - Reference concepts: 2D office map, Participants Panel, private areas, desks, status dots, bottom call controls, chat, locate/follow/wave actions.
 - Research notes: `docs/gather-ui-research.md`
+- Self-review checklist: `docs/gather-quality-review.md`
 
 ## Local preview
 
