@@ -1,226 +1,345 @@
 const agents = {
-  mika: { name: "ミカ", role: "Planner Agent", status: "available", plan: 72, build: 48, qa: 64 },
-  ren: { name: "レン", role: "Builder Agent", status: "focus", plan: 38, build: 86, qa: 52 },
-  sora: { name: "ソラ", role: "QA Agent", status: "review", plan: 55, build: 44, qa: 91 },
-  nagi: { name: "ナギ", role: "Ops Agent", status: "available", plan: 46, build: 62, qa: 70 }
+  mika: {
+    id: "mika",
+    name: "Mika",
+    role: "Planner Agent",
+    status: "available",
+    area: "Focus Pods",
+    task: "次の仕様整理を待機中",
+    color: "mika"
+  },
+  ren: {
+    id: "ren",
+    name: "Ren",
+    role: "Builder Agent",
+    status: "focus",
+    area: "Review Pods",
+    task: "Agent育成UIの実装に集中",
+    color: "ren"
+  },
+  sora: {
+    id: "sora",
+    name: "Sora",
+    role: "QA Agent",
+    status: "meeting",
+    area: "Review Pods",
+    task: "品質レビューで確認待ち",
+    color: "sora"
+  },
+  nagi: {
+    id: "nagi",
+    name: "Nagi",
+    role: "Ops Agent",
+    status: "available",
+    area: "Cafe",
+    task: "運用手順を整理中",
+    color: "nagi"
+  }
+};
+
+const areas = [
+  { id: "review", name: "Review Pods", count: 3, detail: "仕様レビュー中 / Private Area" },
+  { id: "focus", name: "Focus Pods", count: 2, detail: "深い作業中 / Team desks" },
+  { id: "client", name: "Client Room", count: 1, detail: "外部相談 / Locked soon" }
+];
+
+const statusText = {
+  available: "Available",
+  focus: "Focus",
+  meeting: "In meeting",
+  away: "Away"
 };
 
 const state = {
   selected: "mika",
-  panel: "staff",
-  funds: 12480,
-  trust: 82,
-  progress: 42,
-  delivered: 0,
-  trained: 0,
-  hired: 0,
-  turn: 0
-};
-
-const messages = [
-  "新規案件「仕様整理」が届きました",
-  "レンが実装に集中しています",
-  "ソラが品質確認を待っています",
-  "ナレッジ資料室に改善メモが追加されました"
-];
-
-const statusLabel = {
-  available: "空き",
-  focus: "集中",
-  review: "確認待ち"
+  selfStatus: "available",
+  peopleOpen: true,
+  simplified: false,
+  studio: false,
+  mic: true,
+  cam: false,
+  screen: false,
+  reactions: 0,
+  taskRuns: 0
 };
 
 const q = (selector) => document.querySelector(selector);
 const qa = (selector) => [...document.querySelectorAll(selector)];
 
-function clamp(value, min = 0, max = 100) {
-  return Math.max(min, Math.min(max, value));
-}
-
 function selectedAgent() {
   return agents[state.selected];
 }
 
-function updateCounts() {
-  const counts = { available: 0, focus: 0, review: 0 };
-  Object.values(agents).forEach((agent) => {
-    counts[agent.status] += 1;
-  });
-  q("#availableCount").textContent = counts.available;
-  q("#focusCount").textContent = counts.focus;
-  q("#reviewCount").textContent = counts.review;
+function setToast(message) {
+  q("#mapToast").textContent = message;
 }
 
-function updateHud() {
-  q("#fundsLabel").textContent = state.funds.toLocaleString("ja-JP");
-  q("#trustLabel").textContent = state.trust;
-  q("#qualityLabel").textContent = state.trust >= 90 ? "S" : state.trust >= 78 ? "A" : "B";
-  q("#turnLabel").textContent = ["朝", "昼", "夕方", "夜"][state.turn % 4];
-  q("#summaryLine").textContent = `納品 ${state.delivered} / 研修 ${state.trained} / 採用 ${state.hired}`;
+function addMessage(author, text) {
+  const p = document.createElement("p");
+  const b = document.createElement("b");
+  b.textContent = author;
+  p.append(b, ` ${text}`);
+  q("#messages").append(p);
+  q("#messages").scrollTop = q("#messages").scrollHeight;
 }
 
-function setTicker(text) {
-  const ticker = q("#ticker");
-  ticker.textContent = text;
-  ticker.animate(
-    [{ transform: "translateY(0)" }, { transform: "translateY(-3px)" }, { transform: "translateY(0)" }],
-    { duration: 260, easing: "ease-out" }
-  );
+function messageAgent(id) {
+  const agent = agents[id];
+  state.peopleOpen = true;
+  addMessage("You", `${agent.name} にDM: 次のタスクを相談したいです`);
+  setToast(`${agent.name} にメッセージしました`);
 }
 
-function updatePanel() {
+function locateAgent(id) {
+  const agent = agents[id];
+  setToast(`${agent.name} をマップ上でLocateしました`);
+}
+
+function followAgent(id) {
+  const agent = agents[id];
+  setToast(`${agent.name} をFollow中。移動に追従します`);
+}
+
+function renderProfile() {
   const agent = selectedAgent();
-  q("#panelKind").textContent = state.panel === "staff" ? "社員" :
-    state.panel === "projects" ? "案件" :
-    state.panel === "research" ? "研究" : "設備";
-  q("#panelTitle").textContent = state.panel === "staff" ? agent.name :
-    state.panel === "projects" ? "受注ボード" :
-    state.panel === "research" ? "研究室" : "オフィス";
-
-  q("#staffCard").classList.toggle("hidden", state.panel === "projects");
-  q("#projectCard").classList.toggle("hidden", state.panel !== "projects");
-
-  q("#roleLabel").textContent = `${agent.role} / ${statusLabel[agent.status]}`;
-  q("#planValue").textContent = agent.plan;
-  q("#buildValue").textContent = agent.build;
-  q("#qaValue").textContent = agent.qa;
-  q("#planMeter").value = agent.plan;
-  q("#buildMeter").value = agent.build;
-  q("#qaMeter").value = agent.qa;
-
-  const portrait = q("#portrait");
-  portrait.className = `portrait ${agent.status}`;
-
-  q("#projectFill").style.width = `${state.progress}%`;
-  q("#projectPercent").textContent = `${state.progress}%`;
-  q("#riskLabel").textContent = state.progress > 78 ? "低" : state.trust < 70 ? "中" : "低";
+  q("#profileName").textContent = agent.name;
+  q("#profileMeta").textContent = `${agent.role} / ${statusText[agent.status]}`;
+  q("#profileTask").textContent = agent.task;
+  q("#profileAvatar").className = `profile-avatar ${agent.status}`;
+  q("#roomLabel").textContent = `Agent HQ / ${agent.area}`;
 }
 
-function updateAvatars() {
-  qa(".avatar").forEach((avatar) => {
-    const key = avatar.dataset.agent;
-    const agent = agents[key];
-    avatar.classList.toggle("active", key === state.selected);
+function renderMembers() {
+  const term = q("#memberSearch").value.trim().toLowerCase();
+  const globalTerm = q("#globalSearch").value.trim().toLowerCase();
+  const filter = term || globalTerm;
+  const list = q("#memberList");
+  list.replaceChildren();
+
+  Object.values(agents)
+    .filter((agent) => {
+      const haystack = `${agent.name} ${agent.role} ${agent.area} ${agent.task}`.toLowerCase();
+      return !filter || haystack.includes(filter);
+    })
+    .forEach((agent) => {
+      const row = document.createElement("article");
+      row.className = `member-row ${agent.id === state.selected ? "active" : ""}`;
+      row.dataset.agent = agent.id;
+      row.innerHTML = `
+        <button class="member-main" type="button">
+          <span class="mini-face ${agent.color}"></span>
+          <span><b>${agent.name}</b><small>${agent.role} / ${agent.area}</small></span>
+          <i class="status-dot ${agent.status}"></i>
+        </button>
+        ${agent.id === state.selected ? `
+          <div class="row-actions">
+            <button type="button" data-member-action="message">Message</button>
+            <button type="button" data-member-action="locate">Locate</button>
+            <button type="button" data-member-action="follow">Follow</button>
+          </div>
+        ` : ""}
+      `;
+      row.querySelector(".member-main").addEventListener("click", () => selectAgent(agent.id, "panel"));
+      row.querySelectorAll("[data-member-action]").forEach((button) => {
+        button.addEventListener("click", () => {
+          if (button.dataset.memberAction === "message") messageAgent(agent.id);
+          if (button.dataset.memberAction === "locate") locateAgent(agent.id);
+          if (button.dataset.memberAction === "follow") followAgent(agent.id);
+          renderControls();
+        });
+      });
+      list.append(row);
+    });
+
+  q("#memberCount").textContent = Object.keys(agents).length;
+  q("#peopleCount").textContent = Object.values(agents).filter((agent) => agent.status !== "away").length;
+  q("#onlineLabel").textContent = `${q("#peopleCount").textContent} online`;
+}
+
+function renderAreas() {
+  const list = q("#activeAreaList");
+  list.replaceChildren();
+  areas.forEach((area) => {
+    const row = document.createElement("button");
+    row.type = "button";
+    row.className = "active-area";
+    row.dataset.area = area.name;
+    row.innerHTML = `
+      <span class="area-icon"></span>
+      <span><b>${area.name}</b><small>${area.detail}</small></span>
+      <strong>${area.count}</strong>
+    `;
+    row.addEventListener("click", () => {
+      q("#roomLabel").textContent = `Agent HQ / ${area.name}`;
+      qa(".area").forEach((node) => node.classList.toggle("active", node.dataset.area === area.name));
+      setToast(`${area.name} にカメラを移動しました`);
+    });
+    list.append(row);
+  });
+  q("#areaCount").textContent = areas.length;
+}
+
+function renderAvatars() {
+  qa(".agent-avatar[data-agent]").forEach((avatar) => {
+    const id = avatar.dataset.agent;
+    const agent = agents[id];
+    avatar.classList.toggle("active", id === state.selected);
     avatar.classList.toggle("available", agent.status === "available");
     avatar.classList.toggle("focus", agent.status === "focus");
-    avatar.classList.toggle("review", agent.status === "review");
+    avatar.classList.toggle("meeting", agent.status === "meeting");
+    avatar.classList.toggle("away", agent.status === "away");
   });
+}
+
+function renderControls() {
+  q(".app-shell").classList.toggle("people-open", state.peopleOpen);
+  q("#participantsPanel").classList.toggle("open", state.peopleOpen);
+  q("#peopleBtn").classList.toggle("active", state.peopleOpen);
+  q("#micBtn").classList.toggle("active", state.mic);
+  q("#camBtn").classList.toggle("active", state.cam);
+  q("#screenBtn").classList.toggle("active", state.screen);
+  q("#mapSurface").classList.toggle("simplified", state.simplified);
+  q("#mapSurface").classList.toggle("studio", state.studio);
+  q("#statusBtn").classList.toggle("focus", state.selfStatus === "focus");
+  q("#statusBtn").textContent = state.selfStatus === "focus" ? "Focus mode" : "Available";
+  q("#selfStatus").textContent = `${statusText[state.selfStatus]} in Agent HQ`;
 }
 
 function render() {
-  updateCounts();
-  updateHud();
-  updatePanel();
-  updateAvatars();
+  renderProfile();
+  renderMembers();
+  renderAreas();
+  renderAvatars();
+  renderControls();
 }
 
-function selectAgent(key) {
-  state.selected = key;
-  state.panel = "staff";
-  qa(".menu-btn").forEach((button) => button.classList.toggle("active", button.dataset.panel === "staff"));
-  setTicker(`${agents[key].name}のデスクを表示しました`);
-  render();
-}
-
-function setPanel(panel) {
-  state.panel = panel;
-  qa(".menu-btn").forEach((button) => button.classList.toggle("active", button.dataset.panel === panel));
-  if (panel === "projects") setTicker("受注案件の進捗を確認しています");
-  if (panel === "research") setTicker("研究室で新しい業務マニュアルを検討中");
-  if (panel === "office") setTicker("設備投資で作業効率を上げられます");
-  render();
-}
-
-function pulse(selector) {
-  const el = q(selector);
-  el.animate(
-    [{ transform: "scale(1)" }, { transform: "scale(1.08)" }, { transform: "scale(1)" }],
-    { duration: 320, easing: "ease-out" }
-  );
-}
-
-function trainAgent() {
+function selectAgent(id, source = "map") {
+  state.selected = id;
   const agent = selectedAgent();
-  agent.plan = clamp(agent.plan + 4);
-  agent.build = clamp(agent.build + 3);
-  agent.qa = clamp(agent.qa + 2);
-  state.funds = Math.max(0, state.funds - 280);
-  state.trained += 1;
-  setTicker(`${agent.name}が研修で成長しました 企画+4 実装+3`);
-  pulse(".g1");
+  setToast(source === "panel" ? `${agent.name} をParticipantsから選択しました` : `${agent.name} のプロフィールを開きました`);
   render();
 }
 
-function startProject() {
+function toggleControl(key, label) {
+  state[key] = !state[key];
+  setToast(`${label}: ${state[key] ? "on" : "off"}`);
+  renderControls();
+}
+
+qa(".agent-avatar[data-agent], .desk[data-agent]").forEach((node) => {
+  node.addEventListener("click", () => selectAgent(node.dataset.agent));
+});
+
+qa(".area").forEach((node) => {
+  node.addEventListener("click", () => {
+    qa(".area").forEach((area) => area.classList.toggle("active", area === node));
+    q("#roomLabel").textContent = `Agent HQ / ${node.dataset.area}`;
+    setToast(`${node.dataset.area} を表示しています`);
+  });
+});
+
+qa(".rail-btn").forEach((button) => {
+  button.addEventListener("click", () => {
+    qa(".rail-btn").forEach((node) => node.classList.toggle("active", node === button));
+    if (button.dataset.view === "chat") state.peopleOpen = true;
+    if (button.dataset.view === "studio") state.studio = !state.studio;
+    setToast(button.dataset.view === "studio" ? "Build mode: deskや家具を編集できます" : `${button.textContent} view`);
+    renderControls();
+  });
+});
+
+q("#peopleBtn").addEventListener("click", () => {
+  state.peopleOpen = !state.peopleOpen;
+  setToast(state.peopleOpen ? "Participants Panelを開きました" : "Participants Panelを閉じました");
+  renderControls();
+});
+
+q("#closePanelBtn").addEventListener("click", () => {
+  state.peopleOpen = false;
+  renderControls();
+});
+
+q("#statusBtn").addEventListener("click", () => {
+  state.selfStatus = state.selfStatus === "available" ? "focus" : "available";
+  setToast(`Status: ${statusText[state.selfStatus]}`);
+  renderControls();
+});
+
+q("#simplifyBtn").addEventListener("click", () => {
+  state.simplified = !state.simplified;
+  setToast(state.simplified ? "Simplified viewで人を見やすくしました" : "Map detailsを表示しました");
+  renderControls();
+});
+
+q("#micBtn").addEventListener("click", () => toggleControl("mic", "Mic"));
+q("#camBtn").addEventListener("click", () => toggleControl("cam", "Cam"));
+q("#screenBtn").addEventListener("click", () => toggleControl("screen", "Screen share"));
+
+q("#emojiBtn").addEventListener("click", () => {
+  state.reactions += 1;
+  setToast(`Reaction sent (${state.reactions})`);
+  addMessage("You", "リアクションを送りました");
+});
+
+q("#messageBtn").addEventListener("click", () => {
+  messageAgent(state.selected);
+  renderControls();
+});
+
+q("#locateBtn").addEventListener("click", () => {
+  locateAgent(state.selected);
+});
+
+q("#followBtn").addEventListener("click", () => {
+  followAgent(state.selected);
+});
+
+q("#waveBtn").addEventListener("click", () => {
   const agent = selectedAgent();
+  setToast(`${agent.name} にWave overしました`);
+  addMessage("System", `${agent.name} にWaveを送信`);
+});
+
+q("#taskBtn").addEventListener("click", () => {
+  const agent = selectedAgent();
+  state.taskRuns += 1;
   agent.status = "focus";
-  state.panel = "projects";
-  state.progress = clamp(state.progress + Math.round((agent.plan + agent.build) / 24), 0, 100);
-  if (state.progress >= 100) {
-    state.progress = 18;
-    state.trust = clamp(state.trust + 4);
-    state.funds += 1560;
-    state.delivered += 1;
-    setTicker("案件を納品しました 信頼+4 資金+1,560");
-    pulse(".big-copy");
-  } else {
-    setTicker(`${agent.name}が案件を進めました 進捗 ${state.progress}%`);
-    pulse(".g3");
-  }
-  qa(".menu-btn").forEach((button) => button.classList.toggle("active", button.dataset.panel === "projects"));
+  agent.task = `タスク#${state.taskRuns} を実行中`;
+  setToast(`${agent.name} がタスクを開始しました`);
   render();
-}
-
-function reviewQuality() {
-  const agent = selectedAgent();
-  agent.status = "review";
-  state.trust = clamp(state.trust + Math.round(agent.qa / 30));
-  state.funds = Math.max(0, state.funds - 120);
-  setTicker(`${agent.name}が品質確認に入りました 信頼が上昇`);
-  pulse(".b2");
-  render();
-}
-
-function hireAgent() {
-  state.hired += 1;
-  state.funds = Math.max(0, state.funds - 800);
-  state.trust = clamp(state.trust + 1);
-  setTicker("新しいAgent候補を面談しました");
-  pulse(".presence");
-  render();
-}
-
-function walkToDesk() {
-  const agent = selectedAgent();
-  agent.status = "available";
-  setTicker(`${agent.name}が自席に戻りました`);
-  pulse(`.avatar[data-agent="${state.selected}"]`);
-  render();
-}
-
-function tick() {
-  state.turn += 1;
-  const pool = Object.keys(agents);
-  const agent = agents[pool[state.turn % pool.length]];
-  if (state.turn % 3 === 0 && agent.status !== "review") agent.status = "focus";
-  if (state.turn % 5 === 0) agent.status = "available";
-  setTicker(messages[state.turn % messages.length]);
-  render();
-}
-
-qa(".avatar, .desk").forEach((el) => {
-  el.addEventListener("click", () => selectAgent(el.dataset.agent));
 });
 
-qa(".menu-btn").forEach((button) => {
-  button.addEventListener("click", () => setPanel(button.dataset.panel));
+q("#homeBtn").addEventListener("click", () => {
+  q("#youAvatar").style.left = "52%";
+  q("#youAvatar").style.top = "50%";
+  setToast("自分の位置に戻りました");
 });
 
-q("#trainBtn").addEventListener("click", trainAgent);
-q("#projectBtn").addEventListener("click", startProject);
-q("#reviewBtn").addEventListener("click", reviewQuality);
-q("#hireBtn").addEventListener("click", hireAgent);
-q("#walkBtn").addEventListener("click", walkToDesk);
+q("#zoomIn").addEventListener("click", () => setToast("Zoom in"));
+q("#zoomOut").addEventListener("click", () => setToast("Zoom out"));
+q("#inviteBtn").addEventListener("click", () => setToast("Invite linkをコピーしました"));
+q("#lockBtn").addEventListener("click", () => setToast("Review Podsをロックしました"));
+
+q("#mapSurface").addEventListener("dblclick", (event) => {
+  const rect = q("#mapSurface").getBoundingClientRect();
+  const left = ((event.clientX - rect.left) / rect.width) * 100;
+  const top = ((event.clientY - rect.top) / rect.height) * 100;
+  q("#youAvatar").style.left = `${Math.max(6, Math.min(90, left))}%`;
+  q("#youAvatar").style.top = `${Math.max(8, Math.min(86, top))}%`;
+  setToast("Double-clickした場所へ移動しました");
+});
+
+q("#memberSearch").addEventListener("input", renderMembers);
+q("#globalSearch").addEventListener("input", renderMembers);
+
+q("#composer").addEventListener("submit", (event) => {
+  event.preventDefault();
+  const input = q("#chatInput");
+  const text = input.value.trim();
+  if (!text) return;
+  addMessage("You", text);
+  input.value = "";
+  setToast("Room chatに送信しました");
+});
 
 render();
-window.setInterval(tick, 9000);

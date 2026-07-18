@@ -4,7 +4,9 @@ Independent UI mock for `myagent mk3`.
 
 - No connection to mk1 or mk2 code, APIs, data, queue, or dashboard.
 - Static GitHub Pages-ready site.
-- UI direction: company-management sim inspired by Game Dev Story, with spatial office presence inspired by Gather.
+- UI direction: Gather-style virtual office for managing and growing agents.
+- Reference concepts: 2D office map, Participants Panel, private areas, desks, status dots, bottom call controls, chat, locate/follow/wave actions.
+- Research notes: `docs/gather-ui-research.md`
 
 ## Local preview
 

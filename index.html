@@ -4,167 +4,240 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>myagent mk3</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%23044ce0'/%3E%3Cpath d='M6 22h20v4H6zM8 11h5v9H8zM15 7h5v13h-5zM22 13h4v7h-4z' fill='%23ffd24f'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23232453'/%3E%3Ccircle cx='11' cy='13' r='5' fill='%2376e49a'/%3E%3Ccircle cx='21' cy='18' r='5' fill='%236d8cff'/%3E%3Cpath d='M7 24h18v3H7z' fill='%23f7c86b'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <main class="shell" aria-label="myagent mk3 mock">
-    <section class="game" aria-label="Agent company office">
-      <header class="hud">
-        <div class="hud-date">
-          <span class="hud-k">6年 4月</span>
-          <span class="hud-v" id="turnLabel">朝</span>
+  <main class="app-shell" aria-label="myagent mk3 Gather-style mock">
+    <aside class="left-rail" aria-label="Workspace navigation">
+      <div class="space-badge">m3</div>
+      <button class="rail-btn active" type="button" data-view="map" aria-label="Map">Map</button>
+      <button class="rail-btn" type="button" data-view="chat" aria-label="Chat">Chat</button>
+      <button class="rail-btn" type="button" data-view="calendar" aria-label="Calendar">Cal</button>
+      <button class="rail-btn" type="button" data-view="studio" aria-label="Studio">Build</button>
+      <button class="rail-btn quiet" type="button" data-view="settings" aria-label="Settings">Set</button>
+      <button class="invite-btn" type="button" id="inviteBtn">Invite</button>
+    </aside>
+
+    <section class="workspace">
+      <header class="top-bar">
+        <div class="space-title">
+          <span>myagent mk3</span>
+          <strong id="roomLabel">Agent HQ / Review Pods</strong>
         </div>
-        <div class="hud-stat">
-          <span>資金</span>
-          <b id="fundsLabel">12,480</b>
-        </div>
-        <div class="hud-stat">
-          <span>信頼</span>
-          <b id="trustLabel">82</b>
-        </div>
-        <div class="hud-stat">
-          <span>品質</span>
-          <b id="qualityLabel">A</b>
+        <label class="top-search">
+          <span>Search</span>
+          <input id="globalSearch" type="search" placeholder="Agent, area, task">
+        </label>
+        <div class="top-actions">
+          <button class="status-pill available" type="button" id="statusBtn">Available</button>
+          <button class="small-pill" type="button" id="simplifyBtn">Simplified view</button>
         </div>
       </header>
 
-      <section class="office-wrap" aria-label="Office map">
-        <div class="sky-band">
-          <div class="gear gear-a"></div>
-          <div class="gear gear-b"></div>
-          <div class="gear gear-c"></div>
+      <section class="stage" aria-label="Virtual office map">
+        <div class="video-strip" id="videoStrip" aria-label="Nearby conversation">
+          <article class="video-tile ren">
+            <span class="tile-avatar"></span>
+            <b>Ren</b>
+            <small>Agent育成UI</small>
+          </article>
+          <article class="video-tile sora">
+            <span class="tile-avatar"></span>
+            <b>Sora</b>
+            <small>品質レビュー</small>
+          </article>
+          <article class="video-tile ghost">
+            <span>Screen</span>
+            <b>仕様ボード</b>
+          </article>
         </div>
 
-        <div class="office" id="office">
-          <div class="back-wall">
-            <div class="window w1"></div>
-            <div class="window w2"></div>
-            <div class="window w3"></div>
-            <div class="whiteboard">
-              <span></span><span></span><span></span>
-            </div>
-          </div>
-          <div class="left-wall"></div>
-          <div class="right-wall"></div>
-          <div class="floor-grid"></div>
+        <div class="map-surface" id="mapSurface">
+          <div class="tile-grid"></div>
 
-          <div class="object shelf"></div>
-          <div class="object plant p1"></div>
-          <div class="object plant p2"></div>
-          <div class="object couch"></div>
-          <div class="object trophy-case"></div>
-
-          <button class="desk d1" data-agent="mika" aria-label="ミカのデスク">
-            <span class="monitor"></span><span class="keyboard"></span>
+          <button class="area area-lobby" type="button" data-area="Lobby">
+            <span>Lobby</span>
           </button>
-          <button class="desk d2" data-agent="ren" aria-label="レンのデスク">
-            <span class="monitor"></span><span class="keyboard"></span>
+          <button class="area area-focus" type="button" data-area="Focus Pods">
+            <span>Focus Pods</span>
           </button>
-          <button class="desk d3" data-agent="sora" aria-label="ソラのデスク">
-            <span class="monitor"></span><span class="keyboard"></span>
+          <button class="area area-review" type="button" data-area="Review Pods">
+            <span>Review Pods</span>
           </button>
-          <button class="desk d4" data-agent="nagi" aria-label="ナギのデスク">
-            <span class="monitor"></span><span class="keyboard"></span>
+          <button class="area area-client" type="button" data-area="Client Room">
+            <span>Client Room</span>
+          </button>
+          <button class="area area-cafe" type="button" data-area="Cafe">
+            <span>Cafe</span>
           </button>
 
-          <button class="avatar a1 available active" data-agent="mika" aria-label="ミカ">
-            <span class="head"></span><span class="body"></span><span class="name">ミカ</span>
+          <div class="wall wall-a"></div>
+          <div class="wall wall-b"></div>
+          <div class="wall wall-c"></div>
+          <div class="rug rug-review"></div>
+          <div class="rug rug-client"></div>
+
+          <button class="object desk desk-mika" type="button" data-agent="mika" aria-label="Mika desk">
+            <span class="monitor"></span><span class="chair"></span><b>Mika desk</b>
           </button>
-          <button class="avatar a2 focus" data-agent="ren" aria-label="レン">
-            <span class="head"></span><span class="body"></span><span class="name">レン</span>
+          <button class="object desk desk-ren" type="button" data-agent="ren" aria-label="Ren desk">
+            <span class="monitor"></span><span class="chair"></span><b>Ren desk</b>
           </button>
-          <button class="avatar a3 review" data-agent="sora" aria-label="ソラ">
-            <span class="head"></span><span class="body"></span><span class="name">ソラ</span>
+          <button class="object desk desk-sora" type="button" data-agent="sora" aria-label="Sora desk">
+            <span class="monitor"></span><span class="chair"></span><b>Sora desk</b>
           </button>
-          <button class="avatar a4 available" data-agent="nagi" aria-label="ナギ">
-            <span class="head"></span><span class="body"></span><span class="name">ナギ</span>
+          <button class="object desk desk-nagi" type="button" data-agent="nagi" aria-label="Nagi desk">
+            <span class="monitor"></span><span class="chair"></span><b>Nagi desk</b>
           </button>
 
-          <div class="bubble b1" id="morningBubble">おはよう</div>
-          <div class="bubble b2" id="doneBubble">よくできた</div>
-          <div class="gain g1">企画 +3</div>
-          <div class="gain g2">品質 +2</div>
-          <div class="gain g3">信頼 +7</div>
-          <div class="flame f1"></div>
-          <div class="flame f2"></div>
-        </div>
+          <div class="object table table-review"><span></span><span></span><span></span></div>
+          <div class="object table table-client"><span></span><span></span><span></span></div>
+          <div class="object sofa sofa-a"></div>
+          <div class="object sofa sofa-b"></div>
+          <div class="object plant plant-a"></div>
+          <div class="object plant plant-b"></div>
+          <div class="object whiteboard">Spec</div>
+          <div class="object books"></div>
 
-        <aside class="presence" aria-label="Agent statuses">
-          <b>社員状況</b>
-          <span><i class="dot available"></i>空き <strong id="availableCount">2</strong></span>
-          <span><i class="dot focus"></i>集中 <strong id="focusCount">1</strong></span>
-          <span><i class="dot review"></i>確認待ち <strong id="reviewCount">1</strong></span>
-        </aside>
-      </section>
+          <div class="private-ring ring-review"></div>
+          <div class="private-ring ring-focus"></div>
 
-      <section class="message-strip" aria-live="polite">
-        <div class="big-copy">
-          <span>AGENT</span><b>を育てよう!</b>
-        </div>
-        <div class="ticker" id="ticker">新規案件「仕様整理」が届きました</div>
-      </section>
+          <button class="agent-avatar avatar-mika available active" type="button" data-agent="mika" aria-label="Mika">
+            <span class="body"></span><span class="name">Mika</span><span class="chat-bubble">open</span>
+          </button>
+          <button class="agent-avatar avatar-ren focus" type="button" data-agent="ren" aria-label="Ren">
+            <span class="body"></span><span class="name">Ren</span><span class="chat-bubble">coding</span>
+          </button>
+          <button class="agent-avatar avatar-sora meeting" type="button" data-agent="sora" aria-label="Sora">
+            <span class="body"></span><span class="name">Sora</span><span class="chat-bubble">review</span>
+          </button>
+          <button class="agent-avatar avatar-nagi available" type="button" data-agent="nagi" aria-label="Nagi">
+            <span class="body"></span><span class="name">Nagi</span><span class="chat-bubble">free</span>
+          </button>
+          <button class="agent-avatar avatar-you available you" type="button" id="youAvatar" aria-label="You">
+            <span class="body"></span><span class="name">You</span>
+          </button>
 
-      <section class="command-area">
-        <nav class="menu" aria-label="Main actions">
-          <button class="menu-btn active" data-panel="staff">社員</button>
-          <button class="menu-btn" data-panel="projects">案件</button>
-          <button class="menu-btn" data-panel="research">研究</button>
-          <button class="menu-btn" data-panel="office">設備</button>
-        </nav>
-
-        <section class="panel" id="panel" aria-label="Command panel">
-          <div class="panel-head">
-            <div>
-              <span class="panel-k" id="panelKind">社員</span>
-              <h1 id="panelTitle">ミカ</h1>
-            </div>
-            <button class="tiny-btn" id="walkBtn">席へ</button>
-          </div>
-
-          <div class="staff-card" id="staffCard">
-            <div class="portrait available" id="portrait"><span></span></div>
-            <div class="staff-info">
-              <div class="role" id="roleLabel">Planner Agent</div>
-              <div class="bars">
-                <label>企画 <span id="planValue">72</span></label>
-                <meter id="planMeter" min="0" max="100" value="72"></meter>
-                <label>実装 <span id="buildValue">48</span></label>
-                <meter id="buildMeter" min="0" max="100" value="48"></meter>
-                <label>検証 <span id="qaValue">64</span></label>
-                <meter id="qaMeter" min="0" max="100" value="64"></meter>
+          <article class="profile-pop" id="profilePop" aria-label="Selected agent">
+            <div class="profile-head">
+              <span class="profile-avatar available" id="profileAvatar"></span>
+              <div>
+                <b id="profileName">Mika</b>
+                <small id="profileMeta">Planner Agent / Available</small>
               </div>
             </div>
-          </div>
-
-          <div class="project-card hidden" id="projectCard">
-            <div class="project-title">受注中: Agent育成UI</div>
-            <div class="project-progress"><span id="projectFill"></span></div>
-            <div class="project-meta">
-              <span>進捗 <b id="projectPercent">42%</b></span>
-              <span>炎上 <b id="riskLabel">低</b></span>
+            <p id="profileTask">次の仕様整理を待機中</p>
+            <div class="profile-actions">
+              <button type="button" id="messageBtn">Message</button>
+              <button type="button" id="locateBtn">Locate</button>
+              <button type="button" id="followBtn">Follow</button>
             </div>
-          </div>
+          </article>
+        </div>
 
-          <div class="action-grid">
-            <button id="trainBtn">研修</button>
-            <button id="projectBtn">案件開始</button>
-            <button id="reviewBtn">品質確認</button>
-            <button id="hireBtn">採用</button>
-          </div>
-        </section>
+        <div class="map-toast" id="mapToast">Double-click the map to walk. Click an Agent to inspect.</div>
+        <div class="zoom-tools" aria-label="Map controls">
+          <button type="button" id="zoomIn">+</button>
+          <button type="button" id="zoomOut">-</button>
+          <button type="button" id="homeBtn">Home</button>
+        </div>
       </section>
+
+      <footer class="bottom-nav" aria-label="Call controls">
+        <button class="self-card" type="button" id="selfCard">
+          <span class="self-avatar"></span>
+          <span>
+            <b>Oshou</b>
+            <small id="selfStatus">Available in Agent HQ</small>
+          </span>
+        </button>
+        <div class="control-group">
+          <button class="control active" type="button" id="micBtn">Mic</button>
+          <button class="control" type="button" id="camBtn">Cam</button>
+          <button class="control" type="button" id="screenBtn">Share</button>
+          <button class="control" type="button" id="emojiBtn">React</button>
+          <button class="control active" type="button" id="peopleBtn">People <b id="peopleCount">4</b></button>
+        </div>
+        <div class="quick-actions">
+          <button type="button" id="waveBtn">Wave over</button>
+          <button type="button" id="taskBtn">Start task</button>
+        </div>
+      </footer>
     </section>
 
-    <aside class="desktop-notes" aria-label="Design notes">
-      <div class="note-card">
-        <h2>mk3</h2>
-        <p>mk1/mk2とは接続しない独立モック。ゲーム発展国の経営SLG感とGatherの空間プレゼンスを組み合わせる。</p>
+    <aside class="participants-panel open" id="participantsPanel" aria-label="Participants panel">
+      <div class="panel-header">
+        <div>
+          <span>Participants</span>
+          <strong id="onlineLabel">4 online</strong>
+        </div>
+        <button type="button" id="closePanelBtn">Close</button>
       </div>
-      <div class="note-card compact">
-        <b>今日の成果</b>
-        <span id="summaryLine">納品 0 / 研修 0 / 採用 0</span>
-      </div>
+
+      <label class="member-search">
+        <span>Search</span>
+        <input id="memberSearch" type="search" placeholder="Find teammate">
+      </label>
+
+      <section class="panel-section current-area">
+        <div class="section-title">
+          <span>Your Current Area</span>
+          <button type="button" id="lockBtn">Lock</button>
+        </div>
+        <article class="area-card">
+          <b>Review Pods</b>
+          <small>Private Area / 3 people connected</small>
+          <div class="mini-row">
+            <span class="mini-face mika"></span>
+            <span class="mini-face ren"></span>
+            <span class="mini-face sora"></span>
+          </div>
+        </article>
+      </section>
+
+      <section class="panel-section">
+        <div class="section-title">
+          <span>Active Areas</span>
+          <b id="areaCount">3</b>
+        </div>
+        <div class="active-area-list" id="activeAreaList"></div>
+      </section>
+
+      <section class="panel-section">
+        <div class="section-title">
+          <span>Members</span>
+          <b id="memberCount">4</b>
+        </div>
+        <div class="member-list" id="memberList"></div>
+      </section>
+
+      <section class="panel-section offline">
+        <div class="section-title">
+          <span>Offline Members</span>
+          <b>2</b>
+        </div>
+        <div class="member-row disabled">
+          <span class="mini-face offline-face"></span>
+          <span><b>Archivist</b><small>Last seen 09:10</small></span>
+        </div>
+      </section>
+
+      <section class="chat-pane">
+        <div class="chat-tabs">
+          <button class="active" type="button">Room</button>
+          <button type="button">Nearby</button>
+          <button type="button">Inbox</button>
+        </div>
+        <div class="messages" id="messages">
+          <p><b>Sora</b> QA checklistを共有しました</p>
+          <p><b>Ren</b> Agent育成UIを実装中</p>
+        </div>
+        <form class="composer" id="composer">
+          <input id="chatInput" type="text" placeholder="Message Review Pods">
+          <button type="submit">Send</button>
+        </form>
+      </section>
     </aside>
   </main>
   <script src="script.js"></script>
