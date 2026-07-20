@@ -4,13 +4,12 @@ Independent UI mock for `myagent mk3`.
 
 - No connection to mk1 or mk2 code, APIs, data, queue, or dashboard.
 - Static GitHub Pages-ready site.
-- UI direction: Gather-style 16px-grid pixel virtual office for managing and growing agents.
-- Reference concepts: 2D office map, Participants Panel, private areas, desks, status dots, bottom call controls, chat, locate/follow/wave actions.
-- Build mode includes a small object library for placing desks, plants, sofas, boards, coolers, and tables on the map.
-- Game layer uses Phaser 3.90.0 plus EasyStar.js for pixel sprite rendering, placed-object sprites, collision-aware grid setup, and double-click path movement.
-- Canvas map remains as the static background/fallback if the game libraries cannot load.
-- Research notes: `docs/gather-ui-research.md`
-- Self-review checklist: `docs/gather-quality-review.md`
+- UI direction: simple top-down retro RPG office for growing an Agent company.
+- Reference concepts: tile map, office/town facilities, small character sprites, stat popups, RPG message window, bottom command menu.
+- mk2 learnings are mapped into independent mk3 concepts: workflows as work lines, procedures as manuals, verification as QA room, knowledge as library, queue as control room, and reports as accounting/news.
+- No external CDN or image assets.
+- Design notes: `docs/retro-office-design.md`
+- mk2 learning map: `docs/mk2-learning-map.md`
 - Verified screenshots: `screenshots/mobile.png`, `screenshots/desktop.png`
 
 ## Local preview

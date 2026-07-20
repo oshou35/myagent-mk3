@@ -4,255 +4,73 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>myagent mk3</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23232453'/%3E%3Ccircle cx='11' cy='13' r='5' fill='%2376e49a'/%3E%3Ccircle cx='21' cy='18' r='5' fill='%236d8cff'/%3E%3Cpath d='M7 24h18v3H7z' fill='%23f7c86b'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="styles.css?v=phaser-engine-1">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23242b45'/%3E%3Crect x='5' y='7' width='22' height='18' fill='%2370d85d'/%3E%3Crect x='9' y='11' width='14' height='10' fill='%23f7d774'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css?v=retro-rpg-1">
 </head>
 <body>
-  <main class="app-shell" aria-label="myagent mk3 Gather-style mock">
-    <aside class="left-rail" aria-label="Workspace navigation">
-      <div class="space-badge">m3</div>
-      <button class="rail-btn active" type="button" data-view="map" aria-label="Map">Map</button>
-      <button class="rail-btn" type="button" data-view="chat" aria-label="Chat">Chat</button>
-      <button class="rail-btn" type="button" data-view="calendar" aria-label="Calendar">Cal</button>
-      <button class="rail-btn" type="button" data-view="studio" aria-label="Studio">Build</button>
-      <button class="rail-btn quiet" type="button" data-view="settings" aria-label="Settings">Set</button>
-      <button class="invite-btn" type="button" id="inviteBtn">Invite</button>
-    </aside>
+  <main class="game-shell" aria-label="myagent mk3 retro office mock">
+    <header class="game-header">
+      <div class="badge">m3</div>
+      <div class="title-block">
+        <span>myagent mk3</span>
+        <strong>Agent Company RPG</strong>
+      </div>
+      <div class="build-stamp">独立モック</div>
+    </header>
 
-    <section class="workspace">
-      <header class="top-bar">
-        <div class="space-title">
-          <span>myagent mk3</span>
-          <strong id="roomLabel">Agent HQ / Review Pods</strong>
-        </div>
-        <label class="top-search">
-          <span>Search</span>
-          <input id="globalSearch" type="search" placeholder="Agent, area, task">
-        </label>
-        <div class="top-actions">
-          <button class="status-pill available" type="button" id="statusBtn">Available</button>
-          <button class="small-pill" type="button" id="simplifyBtn">Simplified view</button>
-        </div>
-      </header>
-
-      <section class="stage" aria-label="Virtual office map">
-        <div class="video-strip" id="videoStrip" aria-label="Nearby conversation">
-          <article class="video-tile ren">
-            <span class="tile-avatar"></span>
-            <b>Ren</b>
-            <small>Agent育成UI</small>
-          </article>
-          <article class="video-tile sora">
-            <span class="tile-avatar"></span>
-            <b>Sora</b>
-            <small>品質レビュー</small>
-          </article>
-          <article class="video-tile ghost">
-            <span>Screen</span>
-            <b>仕様ボード</b>
-          </article>
-        </div>
-
-        <div class="map-surface" id="mapSurface">
-          <canvas class="pixel-map" id="pixelMap" width="960" height="640" aria-hidden="true"></canvas>
-          <div class="phaser-map" id="phaserMount" aria-hidden="true"></div>
-          <div class="tile-grid"></div>
-
-          <button class="area area-lobby" type="button" data-area="Lobby">
-            <span>Lobby</span>
-          </button>
-          <button class="area area-focus" type="button" data-area="Focus Pods">
-            <span>Focus Pods</span>
-          </button>
-          <button class="area area-review" type="button" data-area="Review Pods">
-            <span>Review Pods</span>
-          </button>
-          <button class="area area-client" type="button" data-area="Client Room">
-            <span>Client Room</span>
-          </button>
-          <button class="area area-cafe" type="button" data-area="Cafe">
-            <span>Cafe</span>
-          </button>
-
-          <div class="wall wall-a"></div>
-          <div class="wall wall-b"></div>
-          <div class="wall wall-c"></div>
-          <div class="rug rug-review"></div>
-          <div class="rug rug-client"></div>
-
-          <button class="object desk desk-mika" type="button" data-agent="mika" aria-label="Mika desk">
-            <span class="monitor"></span><span class="chair"></span><b>Mika desk</b>
-          </button>
-          <button class="object desk desk-ren" type="button" data-agent="ren" aria-label="Ren desk">
-            <span class="monitor"></span><span class="chair"></span><b>Ren desk</b>
-          </button>
-          <button class="object desk desk-sora" type="button" data-agent="sora" aria-label="Sora desk">
-            <span class="monitor"></span><span class="chair"></span><b>Sora desk</b>
-          </button>
-          <button class="object desk desk-nagi" type="button" data-agent="nagi" aria-label="Nagi desk">
-            <span class="monitor"></span><span class="chair"></span><b>Nagi desk</b>
-          </button>
-
-          <div class="object table table-review"><span></span><span></span><span></span></div>
-          <div class="object table table-client"><span></span><span></span><span></span></div>
-          <div class="object sofa sofa-a"></div>
-          <div class="object sofa sofa-b"></div>
-          <div class="object plant plant-a"></div>
-          <div class="object plant plant-b"></div>
-          <div class="object whiteboard">Spec</div>
-          <div class="object books"></div>
-
-          <div class="private-ring ring-review"></div>
-          <div class="private-ring ring-focus"></div>
-
-          <button class="agent-avatar avatar-mika available active" type="button" data-agent="mika" aria-label="Mika">
-            <span class="body"></span><span class="name">Mika</span><span class="chat-bubble">open</span>
-          </button>
-          <button class="agent-avatar avatar-ren focus" type="button" data-agent="ren" aria-label="Ren">
-            <span class="body"></span><span class="name">Ren</span><span class="chat-bubble">coding</span>
-          </button>
-          <button class="agent-avatar avatar-sora meeting" type="button" data-agent="sora" aria-label="Sora">
-            <span class="body"></span><span class="name">Sora</span><span class="chat-bubble">review</span>
-          </button>
-          <button class="agent-avatar avatar-nagi available" type="button" data-agent="nagi" aria-label="Nagi">
-            <span class="body"></span><span class="name">Nagi</span><span class="chat-bubble">free</span>
-          </button>
-          <button class="agent-avatar avatar-you available you" type="button" id="youAvatar" aria-label="You">
-            <span class="body"></span><span class="name">You</span>
-          </button>
-
-          <article class="profile-pop" id="profilePop" aria-label="Selected agent">
-            <div class="profile-head">
-              <span class="profile-avatar available" id="profileAvatar"></span>
-              <div>
-                <b id="profileName">Mika</b>
-                <small id="profileMeta">Planner Agent / Available</small>
-              </div>
-            </div>
-            <p id="profileTask">次の仕様整理を待機中</p>
-            <div class="profile-actions">
-              <button type="button" id="messageBtn">Message</button>
-              <button type="button" id="locateBtn">Locate</button>
-              <button type="button" id="followBtn">Follow</button>
-            </div>
-          </article>
-
-          <section class="studio-palette" aria-label="Object library">
-            <div class="palette-head">
-              <span>Object Library</span>
-              <strong id="activeObjectLabel">Desk Pod</strong>
-            </div>
-            <div class="palette-list" id="objectLibrary"></div>
-            <button class="clear-objects" type="button" id="clearObjectsBtn">Clear placed</button>
-          </section>
-        </div>
-
-        <div class="map-toast" id="mapToast">Double-click the map to walk. Click an Agent to inspect.</div>
-        <div class="zoom-tools" aria-label="Map controls">
-          <button type="button" id="zoomIn">+</button>
-          <button type="button" id="zoomOut">-</button>
-          <button type="button" id="homeBtn">Home</button>
-        </div>
-      </section>
-
-      <footer class="bottom-nav" aria-label="Call controls">
-        <button class="self-card" type="button" id="selfCard">
-          <span class="self-avatar"></span>
-          <span>
-            <b>Oshou</b>
-            <small id="selfStatus">Available in Agent HQ</small>
-          </span>
-        </button>
-        <div class="control-group">
-          <button class="control active" type="button" id="micBtn">Mic</button>
-          <button class="control" type="button" id="camBtn">Cam</button>
-          <button class="control" type="button" id="screenBtn">Share</button>
-          <button class="control" type="button" id="emojiBtn">React</button>
-          <button class="control active" type="button" id="peopleBtn">People <b id="peopleCount">4</b></button>
-        </div>
-        <div class="quick-actions">
-          <button type="button" id="waveBtn">Wave over</button>
-          <button type="button" id="taskBtn">Start task</button>
-        </div>
-      </footer>
-    </section>
-
-    <aside class="participants-panel open" id="participantsPanel" aria-label="Participants panel">
-      <div class="panel-header">
-        <div>
-          <span>Participants</span>
-          <strong id="onlineLabel">4 online</strong>
-        </div>
-        <button type="button" id="closePanelBtn">Close</button>
+    <section class="game-card">
+      <div class="hud" aria-label="Company status">
+        <div><span>DAY</span><strong>20</strong></div>
+        <div><span>資金</span><strong>38,400</strong></div>
+        <div><span>信頼</span><strong>B+</strong></div>
+        <div><span>未対応</span><strong>3</strong></div>
+        <div><span>稼働</span><strong>2/4</strong></div>
       </div>
 
-      <label class="member-search">
-        <span>Search</span>
-        <input id="memberSearch" type="search" placeholder="Find teammate">
-      </label>
+      <section class="screen-frame" aria-label="Retro office field">
+        <canvas id="gameCanvas" width="960" height="640"></canvas>
+        <div class="screen-lines" aria-hidden="true"></div>
+        <div class="field-tip" id="fieldTip">フィールドをクリックして調べる</div>
+      </section>
 
-      <section class="panel-section current-area">
-        <div class="section-title">
-          <span>Your Current Area</span>
-          <button type="button" id="lockBtn">Lock</button>
-        </div>
-        <article class="area-card">
-          <b>Review Pods</b>
-          <small>Private Area / 3 people connected</small>
-          <div class="mini-row">
-            <span class="mini-face mika"></span>
-            <span class="mini-face ren"></span>
-            <span class="mini-face sora"></span>
+      <section class="dialog-window" aria-live="polite">
+        <div class="portrait" id="portrait" aria-hidden="true"></div>
+        <div class="dialog-body">
+          <div class="dialog-title" id="dialogTitle">社長室からのお知らせ</div>
+          <p id="dialogText">mk2の学びを、Agent開発会社の施設と社員育成に置き換えました。掲示板・社員・施設をクリックできます。</p>
+          <div class="stat-line" id="statLine">
+            <span>品質+2</span><span>知識+1</span><span>安全確認</span>
           </div>
-        </article>
-      </section>
-
-      <section class="panel-section">
-        <div class="section-title">
-          <span>Active Areas</span>
-          <b id="areaCount">3</b>
-        </div>
-        <div class="active-area-list" id="activeAreaList"></div>
-      </section>
-
-      <section class="panel-section">
-        <div class="section-title">
-          <span>Members</span>
-          <b id="memberCount">4</b>
-        </div>
-        <div class="member-list" id="memberList"></div>
-      </section>
-
-      <section class="panel-section offline">
-        <div class="section-title">
-          <span>Offline Members</span>
-          <b>2</b>
-        </div>
-        <div class="member-row disabled">
-          <span class="mini-face offline-face"></span>
-          <span><b>Archivist</b><small>Last seen 09:10</small></span>
         </div>
       </section>
 
-      <section class="chat-pane">
-        <div class="chat-tabs">
-          <button class="active" type="button">Room</button>
-          <button type="button">Nearby</button>
-          <button type="button">Inbox</button>
-        </div>
-        <div class="messages" id="messages">
-          <p><b>Sora</b> QA checklistを共有しました</p>
-          <p><b>Ren</b> Agent育成UIを実装中</p>
-        </div>
-        <form class="composer" id="composer">
-          <input id="chatInput" type="text" placeholder="Message Review Pods">
-          <button type="submit">Send</button>
-        </form>
-      </section>
-    </aside>
+      <nav class="command-menu" aria-label="Game commands">
+        <button class="command active" type="button" data-command="hq">本社</button>
+        <button class="command" type="button" data-command="jobs">案件</button>
+        <button class="command" type="button" data-command="agents">社員</button>
+        <button class="command" type="button" data-command="facilities">施設</button>
+        <button class="command" type="button" data-command="reports">決算</button>
+      </nav>
+    </section>
+
+    <section class="status-board" aria-label="mk2 learning summary">
+      <article>
+        <span>WORKFLOW</span>
+        <strong>17</strong>
+        <small>作業ラインとして表現</small>
+      </article>
+      <article>
+        <span>PROCEDURE</span>
+        <strong>40</strong>
+        <small>マニュアル棚で育成</small>
+      </article>
+      <article>
+        <span>REPORTS</span>
+        <strong>20</strong>
+        <small>決算室で改善材料化</small>
+      </article>
+    </section>
   </main>
-  <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/easystarjs@0.4.4/bin/easystar-0.4.4.min.js"></script>
-  <script src="script.js?v=phaser-engine-1"></script>
+  <script src="script.js?v=retro-rpg-1"></script>
 </body>
 </html>
