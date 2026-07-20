@@ -55,6 +55,7 @@
 
         <div class="map-surface" id="mapSurface">
           <canvas class="pixel-map" id="pixelMap" width="960" height="640" aria-hidden="true"></canvas>
+          <div class="phaser-map" id="phaserMount" aria-hidden="true"></div>
           <div class="tile-grid"></div>
 
           <button class="area area-lobby" type="button" data-area="Lobby">
@@ -250,6 +251,8 @@
       </section>
     </aside>
   </main>
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/easystarjs@0.4.4/bin/easystar-0.4.4.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

@@ -127,6 +127,7 @@ const state = {
 const q = (selector) => document.querySelector(selector);
 const qa = (selector) => [...document.querySelectorAll(selector)];
 let walkTimer = null;
+let mapEngine = null;
 
 function savePlacedObjects() {
   try {
@@ -493,7 +494,9 @@ function drawPixelMap() {
   plant(720, 336);
   plant(850, 506);
 
-  state.placedObjects.forEach((object) => catalogObject(object.type, object.x, object.y));
+  if (!window.Phaser || !window.EasyStar) {
+    state.placedObjects.forEach((object) => catalogObject(object.type, object.x, object.y));
+  }
 
   avatar(184, 250, "#4aa3bd", "#382c28");
   avatar(456, 302, "#e3b047", "#7f573e");
@@ -510,6 +513,313 @@ function drawPixelMap() {
 
   solid(80, 56, 816, 4, "rgba(255,255,255,.14)");
   solid(80, 580, 816, 4, "rgba(18, 22, 34, .32)");
+}
+
+function bootMapEngine() {
+  if (!window.Phaser || !window.EasyStar || !q("#phaserMount")) return null;
+
+  const engine = {
+    scene: null,
+    you: null,
+    placedGroup: null,
+    pathfinder: null,
+    grid: null,
+    tileSize: 16,
+    width: 960,
+    height: 640,
+    objectSizes: {
+      desk: { width: 66, height: 36 },
+      plant: { width: 38, height: 48 },
+      sofa: { width: 78, height: 34 },
+      board: { width: 88, height: 44 },
+      cooler: { width: 26, height: 46 },
+      table: { width: 54, height: 36 }
+    },
+    placeObject(type, x, y) {
+      if (!this.scene || !this.placedGroup) return false;
+      this.addObjectSprite(type, x, y);
+      this.markObjectCollision(type, x, y);
+      this.configurePathfinder();
+      return true;
+    },
+    moveToPercent(left, top) {
+      if (!this.scene || !this.you || !this.pathfinder) return false;
+      const targetX = Math.round((left / 100) * this.width);
+      const targetY = Math.round((top / 100) * this.height);
+      this.moveToPoint(targetX, targetY);
+      return true;
+    },
+    moveToPoint(targetX, targetY) {
+      const start = this.toTile(this.you.x, this.you.y);
+      const target = this.findNearestWalkable(this.toTile(targetX, targetY));
+      this.pathfinder.findPath(start.x, start.y, target.x, target.y, (path) => {
+        if (!path || path.length < 2) {
+          this.tweenDirect(target.x * this.tileSize + 8, target.y * this.tileSize + 10);
+          return;
+        }
+        this.followPath(path);
+      });
+      this.pathfinder.calculate();
+    },
+    toTile(x, y) {
+      return {
+        x: Math.max(0, Math.min(59, Math.floor(x / this.tileSize))),
+        y: Math.max(0, Math.min(39, Math.floor(y / this.tileSize)))
+      };
+    },
+    isWalkable(tile) {
+      return this.grid?.[tile.y]?.[tile.x] === 0;
+    },
+    findNearestWalkable(tile) {
+      if (this.isWalkable(tile)) return tile;
+      for (let radius = 1; radius < 8; radius += 1) {
+        for (let y = tile.y - radius; y <= tile.y + radius; y += 1) {
+          for (let x = tile.x - radius; x <= tile.x + radius; x += 1) {
+            const candidate = { x, y };
+            if (x >= 0 && y >= 0 && x < 60 && y < 40 && this.isWalkable(candidate)) return candidate;
+          }
+        }
+      }
+      return tile;
+    },
+    followPath(path) {
+      const points = path.slice(1).map((point) => ({
+        x: point.x * this.tileSize + 8,
+        y: point.y * this.tileSize + 10
+      }));
+      this.you.play("you-walk", true);
+      const step = (index) => {
+        if (index >= points.length) {
+          this.you.stop();
+          this.you.setTexture("you-idle");
+          return;
+        }
+        this.scene.tweens.add({
+          targets: this.you,
+          x: points[index].x,
+          y: points[index].y,
+          duration: 72,
+          ease: "Linear",
+          onComplete: () => step(index + 1)
+        });
+      };
+      step(0);
+    },
+    tweenDirect(x, y) {
+      this.you.play("you-walk", true);
+      this.scene.tweens.add({
+        targets: this.you,
+        x,
+        y,
+        duration: 520,
+        ease: "Linear",
+        onComplete: () => {
+          this.you.stop();
+          this.you.setTexture("you-idle");
+        }
+      });
+    },
+    configurePathfinder() {
+      this.pathfinder = new window.EasyStar.js();
+      this.pathfinder.setGrid(this.grid);
+      this.pathfinder.setAcceptableTiles([0]);
+      this.pathfinder.enableDiagonals();
+      this.pathfinder.disableCornerCutting();
+    },
+    markRectCollision(x, y, width, height) {
+      const start = this.toTile(x, y);
+      const end = this.toTile(x + width, y + height);
+      for (let row = start.y; row <= end.y; row += 1) {
+        for (let col = start.x; col <= end.x; col += 1) {
+          if (this.grid[row] && typeof this.grid[row][col] !== "undefined") this.grid[row][col] = 1;
+        }
+      }
+    },
+    markObjectCollision(type, x, y) {
+      const size = this.objectSizes[type] || { width: 32, height: 32 };
+      this.markRectCollision(x, y, size.width, size.height);
+    },
+    addObjectSprite(type, x, y) {
+      const key = `obj-${type}`;
+      const sprite = this.scene.add.image(x, y, key).setOrigin(0, 0).setDepth(2);
+      this.placedGroup.add(sprite);
+    }
+  };
+
+  const config = {
+    type: window.Phaser.CANVAS,
+    parent: "phaserMount",
+    width: engine.width,
+    height: engine.height,
+    transparent: true,
+    pixelArt: true,
+    scene: {
+      create() {
+        engine.scene = this;
+        createEngineTextures(this);
+        engine.grid = createEngineGrid(engine);
+        engine.configurePathfinder();
+        engine.placedGroup = this.add.group();
+        state.placedObjects.forEach((object) => {
+          engine.addObjectSprite(object.type, object.x, object.y);
+          engine.markObjectCollision(object.type, object.x, object.y);
+        });
+        engine.configurePathfinder();
+        engine.you = this.add.sprite(536, 446, "you-idle").setOrigin(.5, 1).setDepth(5);
+        this.anims.create({
+          key: "you-walk",
+          frames: [{ key: "you-walk-0" }, { key: "you-walk-1" }],
+          frameRate: 7,
+          repeat: -1
+        });
+      }
+    }
+  };
+
+  try {
+    engine.game = new window.Phaser.Game(config);
+    q("#mapSurface").classList.add("game-engine-on");
+    return engine;
+  } catch (error) {
+    console.warn("Phaser map engine failed to start", error);
+    return null;
+  }
+}
+
+function createEngineGrid(engine) {
+  const grid = Array.from({ length: 40 }, () => Array(60).fill(0));
+  const mark = (x, y, width, height) => {
+    const start = engine.toTile(x, y);
+    const end = engine.toTile(x + width, y + height);
+    for (let row = start.y; row <= end.y; row += 1) {
+      for (let col = start.x; col <= end.x; col += 1) {
+        if (grid[row] && typeof grid[row][col] !== "undefined") grid[row][col] = 1;
+      }
+    }
+  };
+
+  [
+    [72, 48, 832, 32],
+    [72, 584, 832, 24],
+    [72, 48, 24, 544],
+    [896, 48, 24, 544],
+    [96, 80, 272, 16],
+    [96, 288, 272, 16],
+    [384, 96, 304, 16],
+    [384, 336, 304, 16],
+    [704, 96, 160, 16],
+    [704, 272, 160, 16],
+    [96, 320, 224, 16],
+    [96, 544, 224, 16],
+    [384, 352, 304, 16],
+    [384, 544, 304, 16],
+    [704, 320, 160, 16],
+    [704, 544, 160, 16]
+  ].forEach(([x, y, width, height]) => mark(x, y, width, height));
+
+  [
+    [128, 150, 66, 36],
+    [224, 150, 66, 36],
+    [424, 170, 66, 36],
+    [520, 170, 66, 36],
+    [416, 406, 66, 36],
+    [512, 406, 66, 36],
+    [608, 406, 66, 36],
+    [724, 164, 120, 44],
+    [128, 398, 124, 38],
+    [720, 384, 120, 38]
+  ].forEach(([x, y, width, height]) => mark(x, y, width, height));
+
+  return grid;
+}
+
+function createEngineTextures(scene) {
+  const drawTexture = (key, width, height, draw) => {
+    if (scene.textures.exists(key)) return;
+    const texture = scene.textures.createCanvas(key, width, height);
+    const ctx = texture.getContext();
+    ctx.imageSmoothingEnabled = false;
+    draw(ctx);
+    texture.refresh();
+  };
+  const fill = (ctx, x, y, width, height, color) => {
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y, width, height);
+  };
+  const rect = (ctx, x, y, width, height, fillColor, stroke = "#263047", inset = 2) => {
+    fill(ctx, x, y, width, height, stroke);
+    fill(ctx, x + inset, y + inset, width - inset * 2, height - inset * 2, fillColor);
+  };
+
+  drawTexture("you-idle", 20, 30, (ctx) => {
+    fill(ctx, 7, 0, 8, 3, "#7a4d36");
+    fill(ctx, 5, 3, 12, 8, "#e8b27f");
+    fill(ctx, 4, 5, 3, 7, "#7a4d36");
+    fill(ctx, 16, 5, 3, 7, "#7a4d36");
+    fill(ctx, 6, 12, 12, 12, "#2f54bd");
+    fill(ctx, 3, 14, 4, 9, "#263047");
+    fill(ctx, 17, 14, 4, 9, "#263047");
+    fill(ctx, 7, 24, 4, 5, "#263047");
+    fill(ctx, 14, 24, 4, 5, "#263047");
+  });
+  drawTexture("you-walk-0", 20, 30, (ctx) => {
+    fill(ctx, 7, 0, 8, 3, "#7a4d36");
+    fill(ctx, 5, 3, 12, 8, "#e8b27f");
+    fill(ctx, 4, 5, 3, 7, "#7a4d36");
+    fill(ctx, 16, 5, 3, 7, "#7a4d36");
+    fill(ctx, 6, 12, 12, 12, "#2f54bd");
+    fill(ctx, 2, 14, 4, 9, "#263047");
+    fill(ctx, 18, 14, 4, 9, "#263047");
+    fill(ctx, 5, 24, 4, 5, "#263047");
+    fill(ctx, 15, 24, 4, 5, "#263047");
+  });
+  drawTexture("you-walk-1", 20, 30, (ctx) => {
+    fill(ctx, 7, 0, 8, 3, "#7a4d36");
+    fill(ctx, 5, 3, 12, 8, "#e8b27f");
+    fill(ctx, 4, 5, 3, 7, "#7a4d36");
+    fill(ctx, 16, 5, 3, 7, "#7a4d36");
+    fill(ctx, 6, 12, 12, 12, "#2f54bd");
+    fill(ctx, 4, 14, 4, 9, "#263047");
+    fill(ctx, 16, 14, 4, 9, "#263047");
+    fill(ctx, 8, 24, 4, 5, "#263047");
+    fill(ctx, 12, 24, 4, 5, "#263047");
+  });
+  drawTexture("obj-desk", 66, 36, (ctx) => {
+    rect(ctx, 0, 10, 66, 26, "#e9b26e", "#4c4050", 3);
+    rect(ctx, 9, 0, 22, 14, "#59bfd8", "#223048", 2);
+    rect(ctx, 39, 3, 17, 11, "#6e8be8", "#223048", 2);
+    fill(ctx, 8, 22, 18, 4, "#30466f");
+    fill(ctx, 30, 23, 20, 3, "#fff3d3");
+    fill(ctx, 54, 18, 6, 9, "#61c97b");
+  });
+  drawTexture("obj-plant", 38, 48, (ctx) => {
+    rect(ctx, 12, 28, 16, 18, "#c97850", "#714735", 2);
+    fill(ctx, 4, 14, 26, 16, "#2fa861");
+    fill(ctx, 16, 2, 22, 17, "#64d887");
+    fill(ctx, 20, 21, 18, 12, "#43bd73");
+    fill(ctx, 0, 24, 18, 12, "#58d887");
+  });
+  drawTexture("obj-sofa", 78, 34, (ctx) => {
+    rect(ctx, 0, 0, 78, 34, "#638bc0", "#72495c", 3);
+    fill(ctx, 6, 7, 66, 4, "#93bee5");
+    fill(ctx, 6, 26, 66, 6, "#4f6d9b");
+  });
+  drawTexture("obj-board", 88, 44, (ctx) => {
+    rect(ctx, 0, 0, 88, 44, "#f8f2dc", "#5b6477", 4);
+    fill(ctx, 12, 13, 58, 3, "#5e7dcc");
+    fill(ctx, 12, 23, 36, 3, "#e8786f");
+    fill(ctx, 12, 33, 50, 3, "#57b878");
+  });
+  drawTexture("obj-cooler", 26, 46, (ctx) => {
+    rect(ctx, 2, 18, 22, 28, "#4d5a6e", "#31384a", 2);
+    rect(ctx, 4, 0, 18, 21, "#8dddf2", "#53606e", 2);
+    fill(ctx, 8, 3, 9, 5, "#d6fbff");
+  });
+  drawTexture("obj-table", 54, 36, (ctx) => {
+    rect(ctx, 0, 0, 54, 36, "#e6b36d", "#8b5d3c", 3);
+    fill(ctx, 24, 13, 9, 9, "#8458b8");
+    fill(ctx, 19, 23, 16, 3, "#fff3d3");
+  });
 }
 
 function selectedAgent() {
@@ -715,6 +1025,11 @@ function mapPointFromEvent(event) {
 function moveYouTo(left, top) {
   const you = q("#youAvatar");
   clearTimeout(walkTimer);
+  if (mapEngine?.moveToPercent(left, top)) {
+    you.style.left = `${Math.max(6, Math.min(90, left))}%`;
+    you.style.top = `${Math.max(8, Math.min(86, top))}%`;
+    return;
+  }
   you.classList.add("walking");
   you.style.left = `${Math.max(6, Math.min(90, left))}%`;
   you.style.top = `${Math.max(8, Math.min(86, top))}%`;
@@ -729,7 +1044,7 @@ function placeSelectedObject(event) {
   state.placedObjects.push({ type: active.id, x, y });
   state.placedObjects = state.placedObjects.slice(-40);
   savePlacedObjects();
-  drawPixelMap();
+  if (!mapEngine?.placeObject(active.id, x, y)) drawPixelMap();
   setToast(`${active.name} を配置しました`);
 }
 
@@ -752,6 +1067,8 @@ qa(".rail-btn").forEach((button) => {
     if (button.dataset.view === "studio") {
       state.studio = !state.studio;
       state.profileOpen = false;
+    } else {
+      state.studio = false;
     }
     const active = objectCatalog.find((object) => object.id === state.activeObject);
     setToast(button.dataset.view === "studio" ? `Build mode: ${active?.name || "Object"} を配置できます` : `${button.textContent} view`);
@@ -835,7 +1152,14 @@ q("#lockBtn").addEventListener("click", () => setToast("Review Podsをロック�
 q("#clearObjectsBtn").addEventListener("click", () => {
   state.placedObjects = [];
   savePlacedObjects();
-  drawPixelMap();
+  if (mapEngine?.game) {
+    mapEngine.game.destroy(true);
+    q("#phaserMount").replaceChildren();
+    q("#mapSurface").classList.remove("game-engine-on");
+    mapEngine = bootMapEngine();
+  } else {
+    drawPixelMap();
+  }
   setToast("配置したオブジェクトをクリアしました");
 });
 
@@ -867,4 +1191,5 @@ q("#composer").addEventListener("submit", (event) => {
 });
 
 drawPixelMap();
+mapEngine = bootMapEngine();
 render();

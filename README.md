@@ -7,7 +7,8 @@ Independent UI mock for `myagent mk3`.
 - UI direction: Gather-style 16px-grid pixel virtual office for managing and growing agents.
 - Reference concepts: 2D office map, Participants Panel, private areas, desks, status dots, bottom call controls, chat, locate/follow/wave actions.
 - Build mode includes a small object library for placing desks, plants, sofas, boards, coolers, and tables on the map.
-- You avatar supports double-click walk movement with a simple walk-cycle animation.
+- Game layer uses Phaser 3.90.0 plus EasyStar.js for pixel sprite rendering, placed-object sprites, collision-aware grid setup, and double-click path movement.
+- Canvas map remains as the static background/fallback if the game libraries cannot load.
 - Research notes: `docs/gather-ui-research.md`
 - Self-review checklist: `docs/gather-quality-review.md`
 - Verified screenshots: `screenshots/mobile.png`, `screenshots/desktop.png`

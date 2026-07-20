@@ -1,6 +1,6 @@
 # Gather quality self-review
 
-Date: 2026-07-18
+Date: 2026-07-20
 
 ## Reference observations
 
@@ -17,7 +17,8 @@ Date: 2026-07-18
 - Gather visual correction pass: brightened the hallways and room floors, softened the heavy wall colors, and reduced desk/chair scale so the office reads closer to Gather's airy map view.
 - Sprite system pass: background NPCs are rendered from a small matrix-based sprite atlas, and sparkle effects reuse the same atlas renderer.
 - Studio pass: Build mode now exposes an object library and lets users place selected furniture on a 16px-snapped map coordinate. Placed objects are stored in local storage.
-- Walk pass: double-click movement now animates the You avatar with a simple walk-cycle class.
+- Engine pass: Phaser 3.90.0 runs a transparent pixel-art sprite layer above the canvas map. EasyStar.js provides collision-aware grid pathfinding for the You avatar.
+- Walk pass: double-click movement now routes the You avatar through the Phaser/EasyStar layer instead of a CSS-only jump.
 - Avatar readability: DOM avatars are the single interactive source for named Agents; background NPCs are non-interactive flavor only.
 - Gather-style UI shell: left rail, top room/search/status bar, compact video tiles, bottom call controls, right Participants Panel, and mobile Participants sheet.
 - Core interactions: People panel open/close, Message, Locate, Follow, double-click walk target, Build/Studio object placement, Simplified View, status toggle, chat send.
@@ -26,6 +27,8 @@ Date: 2026-07-18
 ## Verification evidence
 
 - `node --check script.js` passes.
+- `git diff --check` passes.
+- Browser verification: Phaser and EasyStar load, the Phaser canvas exists, the DOM You avatar is hidden while the engine layer is active, Build mode exits correctly when Map is selected, double-click movement updates the Phaser sprite coordinates, and object placement updates both Phaser sprites and local storage.
 - Desktop screenshot: `screenshots/desktop.png`
 - Mobile screenshot: `screenshots/mobile.png`
 
@@ -33,8 +36,8 @@ Date: 2026-07-18
 
 - This is still an original mock, not Gather's proprietary asset set. It does not copy Gather sprites, object library, logo, or exact screenshots.
 - Gather's official pixel assets still have more polished sprite animation, object variety, and per-tile collision semantics than this static prototype.
-- Remaining largest gap: mk3 still lacks a full tileset/object atlas, collision rules, true pathfinding, multiplayer presence, and a map editor/object library equivalent to Gather Studio.
-- This version is acceptable as a stronger high-fidelity direction mock. It is not a production-quality Gather clone.
+- Remaining largest gap: mk3 still lacks a full tileset/object atlas, production map editor, multiplayer presence, live proximity audio/video, and a Gather Studio-scale object library.
+- This version is acceptable as a stronger high-fidelity direction mock with a real game-engine foundation. It is not a production-quality Gather clone.
 
 ## Completion threshold used
 

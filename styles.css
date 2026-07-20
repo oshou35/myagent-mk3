@@ -257,6 +257,25 @@ button {
   image-rendering: pixelated;
 }
 
+.phaser-map {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+  image-rendering: pixelated;
+}
+
+.phaser-map canvas {
+  width: 100% !important;
+  height: 100% !important;
+  image-rendering: pixelated;
+}
+
+.map-surface.game-engine-on .agent-avatar.you {
+  opacity: 0;
+  pointer-events: none;
+}
+
 .map-surface.simplified .object,
 .map-surface.simplified .wall,
 .map-surface.simplified .rug {
